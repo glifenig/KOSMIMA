@@ -7,12 +7,12 @@ client
 const databases = new Appwrite.Databases(client);
 const storage = new Appwrite.Storage(client);
 
+// Get Appwrite ID generator
+const ID = Appwrite.ID;
+
 const databaseId = "67dc232d000c5295ee23"; // EcommerceDB Database ID
 const collectionId = "Products"; // Collection ID
 const bucketId = "67dc258000056ec47ca5"; // ProductImages Bucket ID
-
-// Function to generate a unique ID manually
-const uniqueID = () => "_" + Math.random().toString(36).substr(2, 9);
 
 // Function to Fetch and Display Products
 async function fetchProducts() {
@@ -49,13 +49,17 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
     let description = document.getElementById("description").value;
 
     try {
-        // Upload image to Appwrite Storage
-        const fileUpload = await storage.createFile(bucketId, uniqueID(), imageFile);
+        // ✅ Fix: Generate a valid file ID using `ID.unique()`
+        const fileUpload = await storage.createFile(bucketId, ID.unique(), imageFile);
+
+        // ✅ Fix: Get the correct file ID from the response
         const fileId = fileUpload.$id;
+
+        // ✅ Corrected Image URL Format
         const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=67dadf1b001c8beaaa91`;
 
         // Insert product details into Appwrite Database
-        await databases.createDocument(databaseId, collectionId, uniqueID(), {
+        await databases.createDocument(databaseId, collectionId, ID.unique(), {
             name,
             price,
             image: imageUrl,
