@@ -4,22 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <link rel="stylesheet" href="./styles.css"> <!-- Make sure the file exists -->
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script> <!-- Appwrite SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Admin Panel</h1>
+    
     <form id="addProductForm">
         <input type="text" id="name" placeholder="Product Name" required>
         <input type="number" id="price" placeholder="Price" required>
-        <input type="file" id="image" required>
+        <input type="file" id="images" multiple required>
         <textarea id="description" placeholder="Description"></textarea>
+        <textarea id="bio" placeholder="Short Bio"></textarea>
+        <input type="number" id="rating" placeholder="Rating (1-5)" min="1" max="5" required>
         <button type="submit">Add Product</button>
     </form>
     
-    <h2>Product List</h2>
-    <div id="productList"></div> <!-- Where products will be displayed -->
-
-    <script src="admin.js"></script> <!-- Ensure this file is in the same folder -->
+    <h2>Products</h2>
+    <div id="productList"></div>
+    
+    <script src="admin.js"></script>
 </body>
 </html>
