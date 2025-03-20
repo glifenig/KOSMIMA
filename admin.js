@@ -1,19 +1,17 @@
-import { Client, Databases, Storage, ID } from "appwrite"; // Ensure ID is imported
-
-// Initialize Appwrite Client
-const client = new Client()
+// Initialize Appwrite SDK using CDN
+const client = new Appwrite.Client();
+client
     .setEndpoint("https://cloud.appwrite.io/v1") // API Endpoint
-    .setProject("67dadf1b001c8beaaa91"); // Project ID (Kosmima)
+    .setProject("67dadf1b001c8beaaa91"); // Kosmima Project ID
 
-const databases = new Databases(client);
-const storage = new Storage(client);
+const databases = new Appwrite.Databases(client);
+const storage = new Appwrite.Storage(client);
 
-// Appwrite Configuration
 const databaseId = "67dc232d000c5295ee23"; // EcommerceDB Database ID
 const collectionId = "Products"; // Collection ID
 const bucketId = "67dc258000056ec47ca5"; // ProductImages Bucket ID
 
-// Function to generate a unique ID if Appwrite's ID object is unavailable
+// Function to generate a unique ID manually
 const uniqueID = () => "_" + Math.random().toString(36).substr(2, 9);
 
 // Function to Fetch and Display Products
@@ -52,12 +50,12 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
 
     try {
         // Upload image to Appwrite Storage
-        const fileUpload = await storage.createFile(bucketId, ID.unique(), imageFile);
+        const fileUpload = await storage.createFile(bucketId, uniqueID(), imageFile);
         const fileId = fileUpload.$id;
         const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=67dadf1b001c8beaaa91`;
 
         // Insert product details into Appwrite Database
-        await databases.createDocument(databaseId, collectionId, ID.unique(), {
+        await databases.createDocument(databaseId, collectionId, uniqueID(), {
             name,
             price,
             image: imageUrl,
