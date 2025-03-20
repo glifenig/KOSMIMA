@@ -2,14 +2,17 @@
 const { Client, Databases, Storage } = Appwrite;
 
 const client = new Client()
-    .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite endpoint
-    .setProject("67dadf1b001c8beaaa91"); // Your Appwrite project ID
-  .setKey("standard_0d7e45c6aacf8b3240c81e32e8d786a65dd2a8adeaefabc7005c7deb704d3b944fca79cb5419c4eae7d76de140fe3d198fa24667814e90fbf9d782ff361cf09fd64d342f5900cb788a00113c06f758345353efad840e9a3bfd5b3bca1590abcc02715f90ba2307e3251cbd24b59c2538d4d81ab66416fd6313500c0fa4d98b73"); // Replace with your API key
-
+    .setEndpoint("https://cloud.appwrite.io/v1") // Replace with your Appwrite endpoint
+    .setProject("67dadf1b001c8beaaa91"); // Replace with your project ID
 
 const databases = new Databases(client);
 const storage = new Storage(client);
 
+const databaseId = "67dc232d000c5295ee23"; // Replace with your Database ID
+const collectionId = "Products"; // Replace with your Collection ID
+const bucketId = "67dc258000056ec47ca5"; // Replace with your Storage Bucket ID
+
+// Form Submission - Add Product
 document.getElementById("addProductForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -20,11 +23,12 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
 
     try {
         // Upload image to Appwrite Storage
-        const fileUpload = await storage.createFile("67dc258000056ec47ca5", "unique()", imageFile);
-        const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/67dc258000056ec47ca5/files/${fileUpload.$id}/view?project=67dadf1b001c8beaaa91`;
+        const fileUpload = await storage.createFile(bucketId, ID.unique(), imageFile);
+        const fileId = fileUpload.$id;
+        const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=67dadf1b001c8beaaa91`;
 
         // Insert product details into Appwrite Database
-        await databases.createDocument("67dc232d000c5295ee23", "Products", "unique()", {
+        await databases.createDocument(databaseId, collectionId, ID.unique(), {
             name,
             price,
             image: imageUrl,
@@ -33,8 +37,48 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
 
         alert("Product added successfully!");
         document.getElementById("addProductForm").reset();
+        fetchProducts(); // Refresh product list
     } catch (error) {
         console.error(error);
         alert("Error adding product");
     }
 });
+
+// Fetch & Display Products
+async function fetchProducts() {
+    try {
+        const response = await databases.listDocuments(databaseId, collectionId);
+        const products = response.documents;
+
+        let productList = document.getElementById("productList");
+        productList.innerHTML = ""; // Clear list before adding new items
+
+        products.forEach(product => {
+            let li = document.createElement("li");
+            li.innerHTML = `
+                <img src="${product.image}" width="100" alt="Product Image">
+                <p><strong>${product.name}</strong></p>
+                <p>Price: $${product.price}</p>
+                <p>${product.description}</p>
+                <button onclick="deleteProduct('${product.$id}')">Delete</button>
+            `;
+            productList.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Error fetching products:", error);
+    }
+}
+
+// Delete Product
+async function deleteProduct(productId) {
+    try {
+        await databases.deleteDocument(databaseId, collectionId, productId);
+        alert("Product deleted successfully!");
+        fetchProducts(); // Refresh product list
+    } catch (error) {
+        console.error("Error deleting product:", error);
+    }
+}
+
+// Load products on page load
+fetchProducts();
