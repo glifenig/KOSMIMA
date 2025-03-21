@@ -7,21 +7,23 @@
 </head>
 <body>
     <h2>Add Product</h2>
-    <form id="addProductForm">
-        <input type="text" id="title" placeholder="Product Title" required>
-        <input type="text" id="shortDescription" placeholder="Short Description" required>
-        <textarea id="description" placeholder="Description"></textarea>
-        <input type="number" id="price" placeholder="Price" required>
+    <form id="product-form">
+        <input type="text" id="title" name="title" placeholder="Product Title" required>
+        <textarea id="description" name="description" placeholder="Product Description" required></textarea>
+        <input type="number" id="price" name="price" placeholder="Price" required>
         
-        <label>Upload up to 5 images:</label>
-        <input type="file" id="image1" required>
-        <input type="file" id="image2">
-        <input type="file" id="image3">
-        <input type="file" id="image4">
-        <input type="file" id="image5">
-        
+        <label>Upload Images (Up to 5):</label>
+        <input type="file" id="image1" name="image1">
+        <input type="file" id="image2" name="image2">
+        <input type="file" id="image3" name="image3">
+        <input type="file" id="image4" name="image4">
+        <input type="file" id="image5" name="image5">
+
         <button type="submit">Add Product</button>
     </form>
+
+    <h2>Product List</h2>
+    <ul id="product-list"></ul>
 
     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <script src="admin.js"></script>
