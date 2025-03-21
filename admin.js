@@ -11,7 +11,7 @@ const databases = new Databases(client);
 
 const databaseID = "67dd77fe000d21d01da5"; // Your Database ID
 const collectionID = "67dd782400354e955129"; // Your Collection ID
-const bucketID = "product-images"; // Replace with your actual storage bucket ID
+const bucketID = "YOUR_BUCKET_ID"; // Replace with your actual storage bucket ID
 
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
@@ -35,8 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Upload images
-        let imageUrls = ["", "", "", "", ""]; // Default empty placeholders for image1 - image5
+        // Upload images and store them in an array
+        let imageUrls = [];
         for (let i = 1; i <= 5; i++) {
             const fileInput = document.getElementById(`image${i}`);
             if (fileInput && fileInput.files.length > 0) {
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const response = await storage.createFile(bucketID, `unique()`, file);
                     const fileID = response.$id;
                     const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${fileID}/view?project=67dd7787000277407b0a`;
-                    imageUrls[i - 1] = fileUrl; // Store in corresponding index
+                    imageUrls.push(fileUrl); // Store in array
                 } catch (error) {
                     console.error(`Error uploading image${i}:`, error);
                 }
@@ -58,11 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
             shortDescription,
             description,
             price,
-            image1: imageUrls[0] || "",
-            image2: imageUrls[1] || "",
-            image3: imageUrls[2] || "",
-            image4: imageUrls[3] || "",
-            image5: imageUrls[4] || ""
+            image1: imageUrls // ✅ Now stored as an array
         };
 
         console.log("Sending product data:", productData);
