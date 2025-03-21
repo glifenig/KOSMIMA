@@ -9,26 +9,37 @@
     <h2>Add Product</h2>
     <form id="productForm">
         <label>Title:</label>
-        <input type="text" id="title" required>
+        <input type="text" id="title" required><br><br>
 
         <label>Short Description:</label>
-        <input type="text" id="shortDescription" required>
+        <input type="text" id="shortDescription" required><br><br>
 
         <label>Description:</label>
-        <textarea id="description" required></textarea>
+        <textarea id="description" required></textarea><br><br>
 
         <label>Price:</label>
-        <input type="number" id="price" required>
+        <input type="number" id="price" required><br><br>
 
-        <label>Upload Images (Max 5):</label>
-        <input type="file" id="image1" accept="image/*">
-        <input type="file" id="image2" accept="image/*">
-        <input type="file" id="image3" accept="image/*">
-        <input type="file" id="image4" accept="image/*">
-        <input type="file" id="image5" accept="image/*">
+        <label>Image 1:</label>
+        <input type="file" id="image1"><br><br>
+
+        <label>Image 2:</label>
+        <input type="file" id="image2"><br><br>
+
+        <label>Image 3:</label>
+        <input type="file" id="image3"><br><br>
+
+        <label>Image 4:</label>
+        <input type="file" id="image4"><br><br>
+
+        <label>Image 5:</label>
+        <input type="file" id="image5"><br><br>
 
         <button type="submit">Add Product</button>
     </form>
+
+    <h2>Products</h2>
+    <div id="productList"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <script src="admin.js"></script>
