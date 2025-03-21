@@ -6,7 +6,7 @@ const storage = new Appwrite.Storage(client);
 client
     .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite API endpoint
     .setProject("67dd7787000277407b0a") // Your Appwrite Project ID
-    .setKey("YOUR_SECRET_API_KEY"); // Use an API Key with appropriate permissions
+    .setKey("standard_4a497e759ed804bf6e0d8dc3d303cb61ede2962fa27ffdf1a8d82317cf5f6448c2a77a827b1c273f487d593eb27fcfa619a0af7c23f0518062aaeacd9fde448040f03f403c734f0636d9596a9864be6ba130f634727ff9e47afd1c931d1d02d16c84c51f302b5741d77499b6d511d44b8d97882367e534d72c7bf43cca7740d9"); // Use an API Key with appropriate permissions
 
 // Function to add a new product
 const addProduct = async () => {
