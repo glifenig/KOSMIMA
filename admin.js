@@ -40,7 +40,7 @@ async function uploadImages(files) {
 document.getElementById("addProductForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    const name = document.getElementById("name").value;
+    const name = document.getElementById("title").value;
     const shortDescription = document.getElementById("shortDescription").value;
     const description = document.getElementById("description").value;
     const price = parseInt(document.getElementById("price").value);
