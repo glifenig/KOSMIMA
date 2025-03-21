@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
     productForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        // Collect product details
         const title = document.getElementById("title").value.trim();
         const shortDescription = document.getElementById("shortDescription").value.trim();
         const description = document.getElementById("description").value.trim();
@@ -37,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Upload images and store them in an array
+        // Upload images and store in an array
         let imageUrls = [];
         for (let i = 1; i <= 5; i++) {
             const fileInput = document.getElementById(`image${i}`);
@@ -47,25 +46,24 @@ document.addEventListener("DOMContentLoaded", function () {
                     const response = await storage.createFile(bucketID, `unique()`, file);
                     const fileID = response.$id;
                     const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${fileID}/view?project=67dd7787000277407b0a`;
-                    imageUrls.push(fileUrl); // Store in array
+                    imageUrls.push(fileUrl);
                 } catch (error) {
                     console.error(`Error uploading image${i}:`, error);
                 }
             }
         }
 
-        // Prepare product data
         const productData = {
             title,
             shortDescription,
             description,
             price,
-            image1: imageUrls // ✅ Store as an array
+            image1: imageUrls // Store as an array
         };
 
         console.log("Sending product data:", productData);
 
-        // Add Product to Database
+        // Add product to database
         try {
             const response = await databases.createDocument(databaseID, collectionID, 'unique()', productData);
             console.log("Product added:", response);
@@ -90,7 +88,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     <h3>${product.title}</h3>
                     <p>${product.shortDescription}</p>
                     <p>Price: $${product.price}</p>
-                    ${product.image1 && product.image1.length > 0 ? `<img src="${product.image1[0]}" width="100">` : ""}
+                    ${product.image1 && product.image1.length > 0 ? 
+                        product.image1.map(img => `<img src="${img}" width="100">`).join("") 
+                        : "No Images"}
+                    <br>
+                    <button onclick="deleteProduct('${product.$id}')">Delete</button>
                     <hr>
                 `;
                 productList.appendChild(productDiv);
@@ -99,6 +101,20 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error fetching products:", error);
         }
     }
+
+    // Delete Product
+    window.deleteProduct = async function (productId) {
+        if (!confirm("Are you sure you want to delete this product?")) return;
+
+        try {
+            await databases.deleteDocument(databaseID, collectionID, productId);
+            alert("Product deleted successfully!");
+            fetchProducts(); // Refresh list after deletion
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            alert(`Failed to delete product. Error: ${error.message}`);
+        }
+    };
 
     fetchProducts(); // Load products on page load
 });
