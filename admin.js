@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const title = document.getElementById("title").value.trim();
         const shortDescription = document.getElementById("shortDescription").value.trim();
-        const description = document.getElementById("description").value.trim();
+        const description = document.getElementById("description").value.trim(); // FULL DESCRIPTION
         const price = parseInt(document.getElementById("price").value.trim());
 
         if (!title || !shortDescription || !description || isNaN(price)) {
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const productData = {
             title,
             shortDescription,
-            description,
+            description, // Store FULL DESCRIPTION
             price,
             image1: imageUrls // Store as an array
         };
@@ -86,8 +86,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 const productDiv = document.createElement("div");
                 productDiv.innerHTML = `
                     <h3>${product.title}</h3>
-                    <p>${product.shortDescription}</p>
-                    <p>Price: $${product.price}</p>
+                    <p><strong>Short Description:</strong> ${product.shortDescription}</p>
+                    <p><strong>Full Description:</strong> ${product.description}</p> <!-- NOW SHOWING FULL DESCRIPTION -->
+                    <p><strong>Price:</strong> $${product.price}</p>
                     ${product.image1 && product.image1.length > 0 ? 
                         product.image1.map(img => `<img src="${img}" width="100">`).join("") 
                         : "No Images"}
