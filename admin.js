@@ -16,21 +16,22 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
     e.preventDefault();
 
     // Get input values
-    const title = document.getElementById("title").value;
-    const shortDescription = document.getElementById("shortDescription").value;
-    const description = document.getElementById("description").value;
+    const title = document.getElementById("title").value.trim();
+    const shortDescription = document.getElementById("shortDescription").value.trim();
+    const description = document.getElementById("description").value.trim();
     const price = parseInt(document.getElementById("price").value);
 
-    if (isNaN(price)) {
-        console.error("Price must be a valid number.");
+    if (!title || !shortDescription || !description || isNaN(price)) {
+        console.error("All fields (title, short description, description, and price) are required.");
         return;
     }
 
-    // Upload images (if provided)
     let imageUrls = [];
+
+    // Upload images and get URLs
     for (let i = 1; i <= 5; i++) {
         const imageInput = document.getElementById(`image${i}`);
-        if (imageInput.files.length > 0) {
+        if (imageInput && imageInput.files.length > 0) {
             const imageFile = imageInput.files[0];
             try {
                 const fileUpload = await storage.createFile(bucketId, ID.unique(), imageFile);
@@ -43,25 +44,24 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
         }
     }
 
-    // Ensure at least one image is uploaded
     if (imageUrls.length === 0) {
         console.error("At least one image is required.");
         return;
     }
 
-    // Add product to Appwrite Database
+    // Save product to Appwrite Database
     try {
         const response = await databases.createDocument(databaseId, collectionId, ID.unique(), {
             title,
             shortDescription,
             description,
             price,
-            images: imageUrls, // Store image URLs as an array
+            images: imageUrls, // Ensure schema expects an array
         });
 
         console.log("Product added successfully:", response);
         alert("Product added successfully!");
-        document.getElementById("addProductForm").reset(); // Reset form after submission
+        document.getElementById("addProductForm").reset(); // Reset form
     } catch (error) {
         console.error("Error adding product:", error);
     }
