@@ -1,3 +1,18 @@
+// Initialize Appwrite SDK
+const { Client, Storage, Databases } = Appwrite;
+
+const client = new Client();
+client
+    .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite Endpoint
+    .setProject("67dd7787000277407b0a"); // Your Project ID
+
+const storage = new Storage(client);
+const databases = new Databases(client);
+
+const databaseID = "67dd77fe000d21d01da5"; // Your Database ID
+const collectionID = "67dd782400354e955129"; // Your Collection ID
+const bucketID = "product-images"; // Replace with your actual storage bucket ID
+
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
 
@@ -58,7 +73,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Product added:", response);
             alert("Product added successfully!");
             productForm.reset();
-            fetchProducts();
         } catch (error) {
             console.error("Error adding product:", error);
             alert(`Failed to add product. Error: ${error.message}`);
