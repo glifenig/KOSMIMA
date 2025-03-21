@@ -3,26 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <script defer src="admin.js"></script>
+    <title>Admin Panel - Kosmima</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Optional: Add your CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
 </head>
 <body>
+
     <h1>Admin Panel</h1>
-    
-    <form id="addProductForm" onsubmit="addProduct(event)">
-        <input type="text" id="name" placeholder="Product Name" required>
-        <input type="text" id="shortDescription" placeholder="Short Description" required>
-        <textarea id="description" placeholder="Description" required></textarea>
-        <input type="number" id="price" placeholder="Price" required>
-        <input type="text" id="category" placeholder="Category" required>
-        <input type="text" id="tags" placeholder="Tags (comma separated)" required>
-        <input type="file" id="images" multiple required>
+
+    <!-- Product Form -->
+    <form id="addProductForm">
+        <label for="name">Product Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="shortDescription">Short Description:</label>
+        <input type="text" id="shortDescription" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" required></textarea>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" required>
+
+        <label for="images">Upload Images (1-5):</label>
+        <input type="file" id="images" multiple accept="image/*">
+
         <button type="submit">Add Product</button>
     </form>
 
-    <h2>Product List</h2>
-    <div id="productList"></div>
+    <!-- Product List -->
+    <h2>Products</h2>
+    <div id="productsContainer"></div>
 
-    <button onclick="logout()">Logout</button>
+    <script src="admin.js"></script>
+
 </body>
 </html>
