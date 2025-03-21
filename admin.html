@@ -3,27 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Add Product</title>
+    <title>Admin Panel</title>
 </head>
 <body>
     <h2>Add Product</h2>
-    <form id="product-form">
-        <input type="text" id="title" name="title" placeholder="Product Title" required>
-        <textarea id="description" name="description" placeholder="Product Description" required></textarea>
-        <input type="number" id="price" name="price" placeholder="Price" required>
-        
-        <label>Upload Images (Up to 5):</label>
-        <input type="file" id="image1" name="image1">
-        <input type="file" id="image2" name="image2">
-        <input type="file" id="image3" name="image3">
-        <input type="file" id="image4" name="image4">
-        <input type="file" id="image5" name="image5">
+    <form id="productForm">
+        <label>Title:</label>
+        <input type="text" id="title" required>
+
+        <label>Short Description:</label>
+        <input type="text" id="shortDescription" required>
+
+        <label>Description:</label>
+        <textarea id="description" required></textarea>
+
+        <label>Price:</label>
+        <input type="number" id="price" required>
+
+        <label>Upload Images (Max 5):</label>
+        <input type="file" id="image1" accept="image/*">
+        <input type="file" id="image2" accept="image/*">
+        <input type="file" id="image3" accept="image/*">
+        <input type="file" id="image4" accept="image/*">
+        <input type="file" id="image5" accept="image/*">
 
         <button type="submit">Add Product</button>
     </form>
-
-    <h2>Product List</h2>
-    <ul id="product-list"></ul>
 
     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <script src="admin.js"></script>
