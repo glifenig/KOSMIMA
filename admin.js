@@ -1,100 +1,97 @@
 // Initialize Appwrite SDK
 const client = new Appwrite.Client();
-client
-    .setEndpoint("https://cloud.appwrite.io/v1") // API Endpoint
-    .setProject("67dadf1b001c8beaaa91"); // Project ID
-
-const databases = new Appwrite.Databases(client);
+const database = new Appwrite.Databases(client);
 const storage = new Appwrite.Storage(client);
-const ID = Appwrite.ID;
 
-const databaseId = "67dc232d000c5295ee23"; // EcommerceDB Database ID
-const collectionId = "Products"; // Collection ID
-const bucketId = "67dc258000056ec47ca5"; // ProductImages Bucket ID
+client
+    .setEndpoint('https://cloud.appwrite.io/v1')
+    .setProject('67dd7787000277407b0a');
 
-// Fetch and Display Products
-async function fetchProducts() {
-    try {
-        const response = await databases.listDocuments(databaseId, collectionId);
-        const productsContainer = document.getElementById("productList");
+const databaseId = '67dd77fe000d21d01da5';
+const collectionId = '67dd782400354e955129';
+const bucketId = 'product-images';
 
-        productsContainer.innerHTML = ""; // Clear previous products
-
-        response.documents.forEach((product) => {
-            const productElement = document.createElement("div");
-            const imagesHTML = product.images.map(img => `<img src="${img}" alt="${product.name}" width="100">`).join('');
-            
-            productElement.innerHTML = `
-                <h3>${product.name}</h3>
-                <p>Price: $${product.price}</p>
-                <p>Rating: ${product.rating} ⭐</p>
-                <p>Bio: ${product.bio}</p>
-                ${imagesHTML}
-                <p>${product.description}</p>
-                <button onclick="deleteProduct('${product.$id}')">Delete</button>
-                <hr>
-            `;
-            productsContainer.appendChild(productElement);
-        });
-    } catch (error) {
-        console.error("Error fetching products:", error);
-    }
-}
-
-// Form Submission - Add Product
-document.getElementById("addProductForm").addEventListener("submit", async function (e) {
+// Function to add a product
+document.getElementById('addProductForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    let name = document.getElementById("name").value;
-    let price = parseInt(document.getElementById("price").value); // Convert to integer
-    let images = document.getElementById("images").files;
-    let description = document.getElementById("description").value;
-    let bio = document.getElementById("bio").value;
-    let rating = parseInt(document.getElementById("rating").value);
-
-    if (isNaN(price) || isNaN(rating)) {
-        alert("Price and Rating must be valid numbers.");
-        return;
-    }
-
-    try {
-        let imageUrls = [];
-        for (let i = 0; i < Math.min(images.length, 5); i++) { // Limit to 5 images
-            const fileUpload = await storage.createFile(bucketId, ID.unique(), images[i]);
-            const fileId = fileUpload.$id;
-            const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=67dadf1b001c8beaaa91`;
+    const name = document.getElementById('name').value;
+    const price = parseInt(document.getElementById('price').value);
+    const description = document.getElementById('description').value;
+    const shortDescription = document.getElementById('shortDescription').value;
+    const category = document.getElementById('category').value;
+    const tags = document.getElementById('tags').value.split(',');
+    
+    const imageFiles = document.getElementById('images').files;
+    let imageUrls = [];
+    
+    for (let i = 0; i < imageFiles.length; i++) {
+        const file = imageFiles[i];
+        try {
+            const response = await storage.createFile(bucketId, Appwrite.ID.unique(), file);
+            const fileId = response.$id;
+            const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=67dd7787000277407b0a`;
             imageUrls.push(imageUrl);
+        } catch (error) {
+            console.error('Error uploading image:', error);
         }
-
-        await databases.createDocument(databaseId, collectionId, ID.unique(), {
+    }
+    
+    try {
+        await database.createDocument(databaseId, collectionId, Appwrite.ID.unique(), {
             name,
             price,
-            images: imageUrls,
+            shortDescription,
             description,
-            bio,
-            rating
+            category,
+            tags,
+            image1: imageUrls[0] || '',
+            image2: imageUrls[1] || '',
+            image3: imageUrls[2] || '',
+            image4: imageUrls[3] || '',
+            image5: imageUrls[4] || ''
         });
-
-        alert("Product added successfully!");
-        document.getElementById("addProductForm").reset();
+        alert('Product added successfully!');
+        document.getElementById('addProductForm').reset();
         fetchProducts();
     } catch (error) {
-        console.error("Error adding product:", error);
-        alert("Error adding product");
+        console.error('Error adding product:', error);
+        alert('Failed to add product');
     }
 });
 
-// Delete Product
-async function deleteProduct(productId) {
+// Function to fetch products
+async function fetchProducts() {
     try {
-        await databases.deleteDocument(databaseId, collectionId, productId);
-        alert("Product deleted successfully!");
-        fetchProducts();
+        const response = await database.listDocuments(databaseId, collectionId);
+        const productsList = document.getElementById('productsList');
+        productsList.innerHTML = '';
+        
+        response.documents.forEach(product => {
+            const productItem = document.createElement('div');
+            productItem.innerHTML = `
+                <h3>${product.name}</h3>
+                <p>${product.shortDescription}</p>
+                <p>Price: $${product.price}</p>
+                <img src="${product.image1}" width="100" />
+                <button onclick="deleteProduct('${product.$id}')">Delete</button>
+            `;
+            productsList.appendChild(productItem);
+        });
     } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Error deleting product");
+        console.error('Error fetching products:', error);
     }
 }
 
-// Load Products on Page Load
-document.addEventListener("DOMContentLoaded", fetchProducts);
+// Function to delete a product
+async function deleteProduct(productId) {
+    try {
+        await database.deleteDocument(databaseId, collectionId, productId);
+        alert('Product deleted');
+        fetchProducts();
+    } catch (error) {
+        console.error('Error deleting product:', error);
+    }
+}
+
+// Fetch products on page load
+document.addEventListener('DOMContentLoaded', fetchProducts);
