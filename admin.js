@@ -1,6 +1,6 @@
 const { Client, Databases, Storage, ID } = Appwrite;
 
-// Initialize Appwrite
+// Initialize Appwrite SDK
 const client = new Client();
 client.setEndpoint("https://cloud.appwrite.io/v1")
       .setProject("67dd7787000277407b0a");
@@ -15,7 +15,6 @@ const bucketId = "product-images";
 document.getElementById("addProductForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    // Get input values
     const title = document.getElementById("title").value.trim();
     const shortDescription = document.getElementById("shortDescription").value.trim();
     const description = document.getElementById("description").value.trim();
@@ -49,14 +48,14 @@ document.getElementById("addProductForm").addEventListener("submit", async funct
         return;
     }
 
-    // Save product to Appwrite Database
+    // Create document in Appwrite database
     try {
         const response = await databases.createDocument(databaseId, collectionId, ID.unique(), {
             title,
             shortDescription,
             description,
             price,
-            images: imageUrls, // Ensure schema expects an array
+            images: imageUrls // 🔥 Ensure this is an array!
         });
 
         console.log("Product added successfully:", response);
