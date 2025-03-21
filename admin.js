@@ -1,97 +1,126 @@
-// Initialize Appwrite SDK
-const client = new Appwrite.Client();
-const database = new Appwrite.Databases(client);
-const storage = new Appwrite.Storage(client);
+// Import Appwrite SDK
+const { Client, Databases, Storage, ID } = Appwrite;
 
-client
-    .setEndpoint('https://cloud.appwrite.io/v1')
-    .setProject('67dd7787000277407b0a');
+// Initialize Appwrite Client
+const client = new Client()
+    .setEndpoint("https://cloud.appwrite.io/v1") // Appwrite API Endpoint
+    .setProject("67dd7787000277407b0a"); // Project ID
 
-const databaseId = '67dd77fe000d21d01da5';
-const collectionId = '67dd782400354e955129';
-const bucketId = 'product-images';
+const databases = new Databases(client);
+const storage = new Storage(client);
 
-// Function to add a product
-document.getElementById('addProductForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('name').value;
-    const price = parseInt(document.getElementById('price').value);
-    const description = document.getElementById('description').value;
-    const shortDescription = document.getElementById('shortDescription').value;
-    const category = document.getElementById('category').value;
-    const tags = document.getElementById('tags').value.split(',');
-    
-    const imageFiles = document.getElementById('images').files;
+// Database & Storage IDs
+const DATABASE_ID = "67dd77fe000d21d01da5"; // EcommerceDB
+const COLLECTION_ID = "67dd782400354e955129"; // Products
+const BUCKET_ID = "product-images"; // Storage Bucket
+
+// Function to Upload Images
+async function uploadImages(files) {
     let imageUrls = [];
-    
-    for (let i = 0; i < imageFiles.length; i++) {
-        const file = imageFiles[i];
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!file) continue;
+
         try {
-            const response = await storage.createFile(bucketId, Appwrite.ID.unique(), file);
-            const fileId = response.$id;
-            const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketId}/files/${fileId}/view?project=67dd7787000277407b0a`;
+            const uploadedFile = await storage.createFile(BUCKET_ID, ID.unique(), file);
+            const fileId = uploadedFile.$id;
+            const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/${BUCKET_ID}/files/${fileId}/view?project=67dd7787000277407b0a`;
             imageUrls.push(imageUrl);
         } catch (error) {
-            console.error('Error uploading image:', error);
+            console.error("Error uploading image:", error);
+            alert("Error uploading image: " + error.message);
         }
     }
-    
+
+    return imageUrls;
+}
+
+// Add Product
+document.getElementById("addProductForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const shortDescription = document.getElementById("shortDescription").value;
+    const description = document.getElementById("description").value;
+    const price = parseInt(document.getElementById("price").value);
+    const imageFiles = document.getElementById("images").files;
+
+    if (!name || !price || imageFiles.length === 0) {
+        alert("Please fill in all required fields and upload at least one image.");
+        return;
+    }
+
     try {
-        await database.createDocument(databaseId, collectionId, Appwrite.ID.unique(), {
+        // Upload images to Appwrite storage
+        const imageUrls = await uploadImages(imageFiles);
+
+        // Insert product into Appwrite database
+        const response = await databases.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
             name,
-            price,
             shortDescription,
             description,
-            category,
-            tags,
-            image1: imageUrls[0] || '',
-            image2: imageUrls[1] || '',
-            image3: imageUrls[2] || '',
-            image4: imageUrls[3] || '',
-            image5: imageUrls[4] || ''
+            price,
+            image1: imageUrls[0] || "",
+            image2: imageUrls[1] || "",
+            image3: imageUrls[2] || "",
+            image4: imageUrls[3] || "",
+            image5: imageUrls[4] || "",
         });
-        alert('Product added successfully!');
-        document.getElementById('addProductForm').reset();
-        fetchProducts();
+
+        alert("Product added successfully!");
+        document.getElementById("addProductForm").reset();
+        fetchProducts(); // Refresh product list
     } catch (error) {
-        console.error('Error adding product:', error);
-        alert('Failed to add product');
+        console.error("Error adding product:", error);
+        alert("Error adding product: " + error.message);
     }
 });
 
-// Function to fetch products
+// Fetch & Display Products
 async function fetchProducts() {
     try {
-        const response = await database.listDocuments(databaseId, collectionId);
-        const productsList = document.getElementById('productsList');
-        productsList.innerHTML = '';
-        
-        response.documents.forEach(product => {
-            const productItem = document.createElement('div');
-            productItem.innerHTML = `
+        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
+        const productsContainer = document.getElementById("productsContainer");
+        productsContainer.innerHTML = "";
+
+        response.documents.forEach((product) => {
+            const productElement = document.createElement("div");
+            productElement.classList.add("product-item");
+            productElement.innerHTML = `
                 <h3>${product.name}</h3>
                 <p>${product.shortDescription}</p>
                 <p>Price: $${product.price}</p>
-                <img src="${product.image1}" width="100" />
+                <div class="product-images">
+                    ${product.image1 ? `<img src="${product.image1}" alt="Product Image 1">` : ""}
+                    ${product.image2 ? `<img src="${product.image2}" alt="Product Image 2">` : ""}
+                    ${product.image3 ? `<img src="${product.image3}" alt="Product Image 3">` : ""}
+                    ${product.image4 ? `<img src="${product.image4}" alt="Product Image 4">` : ""}
+                    ${product.image5 ? `<img src="${product.image5}" alt="Product Image 5">` : ""}
+                </div>
                 <button onclick="deleteProduct('${product.$id}')">Delete</button>
             `;
-            productsList.appendChild(productItem);
+            productsContainer.appendChild(productElement);
         });
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
+        alert("Error fetching products: " + error.message);
     }
 }
 
-// Function to delete a product
+// Delete Product
 async function deleteProduct(productId) {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+
     try {
-        await database.deleteDocument(databaseId, collectionId, productId);
-        alert('Product deleted');
-        fetchProducts();
+        await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, productId);
+        alert("Product deleted successfully!");
+        fetchProducts(); // Refresh list
     } catch (error) {
-        console.error('Error deleting product:', error);
+        console.error("Error deleting product:", error);
+        alert("Error deleting product: " + error.message);
     }
 }
 
-// Fetch products on page load
-document.addEventListener('DOMContentLoaded', fetchProducts);
+// Load products on page load
+document.addEventListener("DOMContentLoaded", fetchProducts);
