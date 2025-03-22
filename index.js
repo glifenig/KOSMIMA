@@ -73,3 +73,50 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchProducts();
     updateCartCount(); // ✅ Ensure cart count updates on page load
 });
+
+
+
+// Initialize Appwrite
+const client = new Appwrite.Client();
+client
+    .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite endpoint
+    .setProject("67dd7787000277407b0a"); // Your project ID
+
+const databases = new Appwrite.Databases(client);
+
+// Database & Collection IDs
+const DATABASE_ID = "67dd77fe000d21d01da5"; // Replace with your Database ID
+const COLLECTION_ID = "67de8e8f0022e5645291"; // Replace with your User Collection ID
+
+// Check if user details exist in localStorage
+if (localStorage.getItem("user-submitted")) {
+    document.getElementById("user-details-form").style.display = "none";
+}
+
+// Handle User Form Submission
+document.getElementById("userForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const phone = document.getElementById("phone").value;
+    const email = document.getElementById("email").value;
+
+    try {
+        // Save to Appwrite Database
+        await databases.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), {
+            name,
+            phone,
+            email
+        });
+
+        // Mark as submitted
+        localStorage.setItem("user-submitted", "true");
+
+        // Hide the form
+        document.getElementById("user-details-form").style.display = "none";
+
+        alert("Your details have been saved!");
+    } catch (error) {
+        console.error("Error saving user data:", error);
+    }
+});
