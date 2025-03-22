@@ -1,4 +1,4 @@
-the admin code: // Initialize Appwrite SDK
+// Initialize Appwrite SDK
 const { Client, Storage, Databases } = Appwrite;
 
 const client = new Client();
