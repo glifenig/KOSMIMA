@@ -11,7 +11,7 @@ const databases = new Databases(client);
 
 const databaseID = "67dd77fe000d21d01da5"; // Database ID
 const collectionID = "67dd782400354e955129"; // Collection ID
-const bucketID = "YOUR_BUCKET_ID"; // Replace with your storage bucket ID
+const bucketID = "product-images"; // Replace with your storage bucket ID
 
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
