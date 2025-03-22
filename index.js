@@ -9,12 +9,17 @@ const databases = new Appwrite.Databases(client);
 async function fetchProducts() {
     try {
         const response = await databases.listDocuments(
-            "67dd77fe000d21d01da5", // Database ID
-            "67dd782400354e955129"  // Collection ID
+            "67dd77fe000d21d01da5", // ✅ Replace with your Database ID
+            "67dd782400354e955129"  // ✅ Replace with your Collection ID
         );
 
+        if (!response.documents || response.documents.length === 0) {
+            console.warn("No products found.");
+            return;
+        }
+
         const productList = document.getElementById("product-list");
-        productList.innerHTML = ""; // Clear previous content
+        productList.innerHTML = "";
 
         response.documents.forEach((product) => {
             const productDiv = document.createElement("div");
@@ -23,9 +28,11 @@ async function fetchProducts() {
             productDiv.innerHTML = `
                 <h2>${product.title}</h2>
                 <p>${product.shortDescription}</p>
-                <img src="${product.image1[0]}" alt="${product.title}" width="200">
+                <img src="${product.image1[0] || 'placeholder.jpg'}" alt="${product.title}" width="200">
                 <br>
                 <a href="product.html?id=${product.$id}">View Details</a>
+                <br>
+                <button onclick="addToCart('${product.$id}', '${product.title}', ${product.price}, '${product.image1[0]}')">Add to Cart</button>
             `;
 
             productList.appendChild(productDiv);
@@ -33,6 +40,21 @@ async function fetchProducts() {
     } catch (error) {
         console.error("Error fetching products:", error);
     }
+}
+
+// Function to Add Product to Cart (Stores in localStorage)
+function addToCart(id, title, price, image) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingItem = cart.find(item => item.id === id);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ id, title, price, image, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert(`${title} added to cart!`);
 }
 
 // Load products when page loads
