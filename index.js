@@ -6,6 +6,7 @@ client
 
 const databases = new Appwrite.Databases(client);
 
+// Fetch Products from Database
 async function fetchProducts() {
     try {
         const response = await databases.listDocuments(
@@ -32,7 +33,9 @@ async function fetchProducts() {
                 <br>
                 <a href="product.html?id=${product.$id}">View Details</a>
                 <br>
-                <button onclick="addToCart('${product.$id}', '${product.title}', ${product.price}, '${product.image1[0]}')">Add to Cart</button>
+                <button onclick="addToCart('${product.$id}', '${product.title}', ${product.price}, '${product.image1[0]}')">
+                    Add to Cart
+                </button>
             `;
 
             productList.appendChild(productDiv);
@@ -42,7 +45,14 @@ async function fetchProducts() {
     }
 }
 
-// Function to Add Product to Cart (Stores in localStorage)
+// Function to Update Cart Count
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+    document.getElementById("cart-count").textContent = totalItems;
+}
+
+// Function to Add Product to Cart
 function addToCart(id, title, price, image) {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -54,8 +64,12 @@ function addToCart(id, title, price, image) {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount(); // ✅ Update cart count
     alert(`${title} added to cart!`);
 }
 
-// Load products when page loads
-document.addEventListener("DOMContentLoaded", fetchProducts);
+// Load products and update cart count when page loads
+document.addEventListener("DOMContentLoaded", () => {
+    fetchProducts();
+    updateCartCount(); // ✅ Ensure cart count updates on page load
+});
