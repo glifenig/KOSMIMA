@@ -3,62 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Listings</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Product List</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Our Store</h1>
-        <nav>
-            <a href="cart.html">View Cart</a>
-        </nav>
-    </header>
-    
-    <main>
-        <section id="product-list"></section>
-    </main>
-    
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <h1>Product List</h1>
+    <div>
+        <span>Cart: <span id="cart-count">0</span> items</span>
+    </div>
+    <div id="product-list"></div>
     <script src="index.js"></script>
-    <script>
-        const client = new Appwrite.Client()
-            .setEndpoint('https://cloud.appwrite.io/v1')
-            .setProject('67dd7787000277407b0a');
-
-        const databases = new Appwrite.Databases(client);
-
-        async function fetchProducts() {
-            try {
-                const response = await databases.listDocuments('67dd77fe000d21d01da5', '67dd782400354e955129');
-                const productList = document.getElementById('product-list');
-                productList.innerHTML = '';
-                
-                response.documents.forEach(product => {
-                    const productItem = document.createElement('div');
-                    productItem.classList.add('product');
-                    productItem.innerHTML = `
-                        <h2>${product.title}</h2>
-                        <p>${product.shortDescription}</p>
-                        <img src="${product.image1[0]}" alt="${product.title}" />
-                        <p>Price: $${product.price}</p>
-                        <button onclick="addToCart('${product.$id}', '${product.title}', ${product.price})">Add to Cart</button>
-                        <a href="product.html?id=${product.$id}">View Details</a>
-                    `;
-                    productList.appendChild(productItem);
-                });
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            }
-        }
-
-        function addToCart(id, title, price) {
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            cart.push({ id, title, price });
-            localStorage.setItem('cart', JSON.stringify(cart));
-            alert('Product added to cart!');
-        }
-
-        fetchProducts();
-    </script>
 </body>
 </html>
