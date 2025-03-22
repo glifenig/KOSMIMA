@@ -29,11 +29,22 @@ async function fetchProductDetails() {
         );
 
         const productDetails = document.getElementById("product-details");
+
+        // Generate HTML for all product images
+        let imagesHTML = "";
+        if (response.image1 && response.image1.length > 0) {
+            imagesHTML = response.image1.map(img => `<img src="${img}" alt="${response.title}" width="300">`).join("");
+        }
+
+        // Display product details
         productDetails.innerHTML = `
             <h2>${response.title}</h2>
-            <img src="${response.image1[0] || 'placeholder.jpg'}" alt="${response.title}" width="300">
+            <div>${imagesHTML}</div>
+            <p><strong>Short Description:</strong> ${response.shortDescription}</p>
             <p><strong>Description:</strong> ${response.description}</p>
             <p><strong>Price:</strong> $${response.price}</p>
+            <p><strong>Category:</strong> ${response.category}</p>
+            <p><strong>Tags:</strong> ${response.tags ? response.tags.join(", ") : "No tags"}</p>
             <button onclick="addToCart('${response.$id}', '${response.title}', ${response.price}, '${response.image1[0]}')">Add to Cart</button>
         `;
     } catch (error) {
