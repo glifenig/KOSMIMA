@@ -1,35 +1,72 @@
-// Initialize Appwrite SDK
-const { Client, Storage, Databases } = Appwrite;
-
-const client = new Client();
+const client = new Appwrite.Client();
 client
-    .setEndpoint("https://cloud.appwrite.io/v1") // Appwrite Endpoint
-    .setProject("67dd7787000277407b0a"); // Project ID
+    .setEndpoint("https://cloud.appwrite.io/v1") 
+    .setProject("67dd7787000277407b0a");
 
-const databases = new Databases(client); // ✅ Move this above fetchUsers
-const storage = new Storage(client);
+const databases = new Appwrite.Databases(client);
 
-const databaseID = "67dd77fe000d21d01da5"; // Database ID
-const collectionID = "67de8e8f0022e5645291"; // User Collection ID (for user details)
-const productCollectionID = "67dd782400354e955129"; // Product Collection ID
-const bucketID = "product-images"; // Storage bucket
+const databaseID = "67dd77fe000d21d01da5"; 
+const productCollectionID = "67dd782400354e955129"; 
+const userCollectionID = "67de8e8f0022e5645291"; 
 
-// ✅ Fetch Users for Admin
-async function fetchUsers() {
+// Fetch Products
+async function fetchProducts() {
     try {
-        const response = await databases.listDocuments(databaseID, collectionID);
-        const userList = document.getElementById("user-list");
+        const response = await databases.listDocuments(databaseID, productCollectionID);
+        if (!response.documents || response.documents.length === 0) {
+            console.warn("No products found.");
+            return;
+        }
 
-        userList.innerHTML = "";
-        response.documents.forEach(user => {
-            const userDiv = document.createElement("div");
-            userDiv.innerHTML = `<p><strong>${user.name}</strong> - ${user.phone} - ${user.email}</p>`;
-            userList.appendChild(userDiv);
+        const productList = document.getElementById("product-list");
+        productList.innerHTML = "";
+
+        response.documents.forEach((product) => {
+            const productDiv = document.createElement("div");
+            productDiv.classList.add("product");
+
+            productDiv.innerHTML = `
+                <h2>${product.title}</h2>
+                <p>${product.shortDescription}</p>
+                <img src="${product.image1[0] || 'placeholder.jpg'}" alt="${product.title}" width="200">
+                <br>
+                <a href="product.html?id=${product.$id}">View Details</a>
+                <br>
+                <button onclick="addToCart('${product.$id}', '${product.title}', ${product.price}, '${product.image1[0]}')">
+                    Add to Cart
+                </button>
+            `;
+
+            productList.appendChild(productDiv);
         });
     } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching products:", error);
     }
 }
 
-// ✅ Load Users on Page Load
-document.addEventListener("DOMContentLoaded", fetchUsers);
+// Add to Cart
+function addToCart(id, title, price, image) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existingItem = cart.find(item => item.id === id);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ id, title, price, image, quantity: 1 });
+    }
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+    alert(`${title} added to cart!`);
+}
+
+// Update Cart Count
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+    document.getElementById("cart-count").textContent = totalItems;
+}
+
+// Load Products and Update Cart Count
+document.addEventListener("DOMContentLoaded", () => {
+    fetchProducts();
+    updateCartCount();
+});
