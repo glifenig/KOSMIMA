@@ -1,4 +1,4 @@
-// Initialize Appwrite
+// Initialize Appwrite (Declared only once)
 const client = new Appwrite.Client();
 client
     .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite endpoint
@@ -6,13 +6,17 @@ client
 
 const databases = new Appwrite.Databases(client);
 
-// Fetch Products from Database
+// Database & Collection IDs
+const PRODUCT_DATABASE_ID = "67dd77fe000d21d01da5"; // Product Database ID
+const PRODUCT_COLLECTION_ID = "67dd782400354e955129"; // Product Collection ID
+
+const USER_DATABASE_ID = "67dd77fe000d21d01da5"; // User Database ID (Same as product if in same database)
+const USER_COLLECTION_ID = "67de8e8f0022e5645291"; // User Collection ID
+
+// ✅ Fetch Products from Database
 async function fetchProducts() {
     try {
-        const response = await databases.listDocuments(
-            "67dd77fe000d21d01da5", // ✅ Replace with your Database ID
-            "67dd782400354e955129"  // ✅ Replace with your Collection ID
-        );
+        const response = await databases.listDocuments(PRODUCT_DATABASE_ID, PRODUCT_COLLECTION_ID);
 
         if (!response.documents || response.documents.length === 0) {
             console.warn("No products found.");
@@ -45,14 +49,14 @@ async function fetchProducts() {
     }
 }
 
-// Function to Update Cart Count
+// ✅ Function to Update Cart Count
 function updateCartCount() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let totalItems = cart.reduce((total, item) => total + item.quantity, 0);
     document.getElementById("cart-count").textContent = totalItems;
 }
 
-// Function to Add Product to Cart
+// ✅ Function to Add Product to Cart
 function addToCart(id, title, price, image) {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -64,37 +68,25 @@ function addToCart(id, title, price, image) {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount(); // ✅ Update cart count
+    updateCartCount(); // Update cart count
     alert(`${title} added to cart!`);
 }
 
-// Load products and update cart count when page loads
+// ✅ Load products and update cart count when page loads
 document.addEventListener("DOMContentLoaded", () => {
     fetchProducts();
-    updateCartCount(); // ✅ Ensure cart count updates on page load
+    updateCartCount();
 });
 
+// ✅ Check if user details exist in localStorage
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("user-submitted")) {
+        document.getElementById("user-details-form").style.display = "none";
+    }
+});
 
-
-// Initialize Appwrite
-const client = new Appwrite.Client();
-client
-    .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite endpoint
-    .setProject("67dd7787000277407b0a"); // Your project ID
-
-const databases = new Appwrite.Databases(client);
-
-// Database & Collection IDs
-const DATABASE_ID = "67dd77fe000d21d01da5"; // Replace with your Database ID
-const COLLECTION_ID = "67de8e8f0022e5645291"; // Replace with your User Collection ID
-
-// Check if user details exist in localStorage
-if (localStorage.getItem("user-submitted")) {
-    document.getElementById("user-details-form").style.display = "none";
-}
-
-// Handle User Form Submission
-document.getElementById("userForm").addEventListener("submit", async function (e) {
+// ✅ Handle User Form Submission
+document.getElementById("userForm")?.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const name = document.getElementById("name").value;
@@ -103,7 +95,7 @@ document.getElementById("userForm").addEventListener("submit", async function (e
 
     try {
         // Save to Appwrite Database
-        await databases.createDocument(DATABASE_ID, COLLECTION_ID, Appwrite.ID.unique(), {
+        await databases.createDocument(USER_DATABASE_ID, USER_COLLECTION_ID, Appwrite.ID.unique(), {
             name,
             phone,
             email
