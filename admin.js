@@ -10,14 +10,12 @@ const storage = new Storage(client);
 const databases = new Databases(client);
 
 const databaseID = "67dd77fe000d21d01da5"; // Database ID
-const productCollectionID = "67dd782400354e955129"; // Product Collection ID
-const userCollectionID = "67de8e8f0022e5645291"; // Replace with your actual Users Collection ID
-const bucketID = "product-images"; // Storage Bucket ID
+const collectionID = "67dd782400354e955129"; // Collection ID
+const bucketID = "product-images"; // Replace with your storage bucket ID
 
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
     const productList = document.getElementById("productList");
-    const userList = document.getElementById("userList");
 
     if (!productForm) {
         console.error("Product form not found!");
@@ -30,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const title = document.getElementById("title").value.trim();
         const shortDescription = document.getElementById("shortDescription").value.trim();
-        const description = document.getElementById("description").value.trim();
+        const description = document.getElementById("description").value.trim(); // FULL DESCRIPTION
         const price = parseInt(document.getElementById("price").value.trim());
 
         if (!title || !shortDescription || !description || isNaN(price)) {
@@ -58,15 +56,16 @@ document.addEventListener("DOMContentLoaded", function () {
         const productData = {
             title,
             shortDescription,
-            description,
+            description, // Store FULL DESCRIPTION
             price,
-            imageUrls // Now correctly storing images
+            image1: imageUrls // Store as an array
         };
 
         console.log("Sending product data:", productData);
 
+        // Add product to database
         try {
-            const response = await databases.createDocument(databaseID, productCollectionID, 'unique()', productData);
+            const response = await databases.createDocument(databaseID, collectionID, 'unique()', productData);
             console.log("Product added:", response);
             alert("Product added successfully!");
             productForm.reset();
@@ -80,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Fetch and display products
     async function fetchProducts() {
         try {
-            const response = await databases.listDocuments(databaseID, productCollectionID);
+            const response = await databases.listDocuments(databaseID, collectionID);
             productList.innerHTML = ""; // Clear previous list
 
             response.documents.forEach((product) => {
@@ -88,10 +87,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 productDiv.innerHTML = `
                     <h3>${product.title}</h3>
                     <p><strong>Short Description:</strong> ${product.shortDescription}</p>
-                    <p><strong>Full Description:</strong> ${product.description}</p>
+                    <p><strong>Full Description:</strong> ${product.description}</p> <!-- NOW SHOWING FULL DESCRIPTION -->
                     <p><strong>Price:</strong> $${product.price}</p>
-                    ${product.imageUrls && product.imageUrls.length > 0 ? 
-                        product.imageUrls.map(img => `<img src="${img}" width="100">`).join("") 
+                    ${product.image1 && product.image1.length > 0 ? 
+                        product.image1.map(img => `<img src="${img}" width="100">`).join("") 
                         : "No Images"}
                     <br>
                     <button onclick="deleteProduct('${product.$id}')">Delete</button>
@@ -109,36 +108,16 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!confirm("Are you sure you want to delete this product?")) return;
 
         try {
-            await databases.deleteDocument(databaseID, productCollectionID, productId);
+            await databases.deleteDocument(databaseID, collectionID, productId);
             alert("Product deleted successfully!");
-            fetchProducts();
+            fetchProducts(); // Refresh list after deletion
         } catch (error) {
             console.error("Error deleting product:", error);
             alert(`Failed to delete product. Error: ${error.message}`);
         }
     };
 
-    // Fetch and display users
-    async function fetchUsers() {
-        try {
-            const response = await databases.listDocuments(databaseID, userCollectionID);
-            userList.innerHTML = ""; // Clear previous data
-
-            response.documents.forEach((user) => {
-                const userDiv = document.createElement("div");
-                userDiv.innerHTML = `
-                    <p><strong>Name:</strong> ${user.name}</p>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                    <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
-                    <hr>
-                `;
-                userList.appendChild(userDiv);
-            });
-        } catch (error) {
-            console.error("Error fetching users:", error);
-        }
-    }
-
     fetchProducts(); // Load products on page load
-    fetchUsers(); // Load users on page load
 });
+
+
