@@ -1,4 +1,4 @@
-// Initialize Appwrite SDK
+the admin code: // Initialize Appwrite SDK
 const { Client, Storage, Databases } = Appwrite;
 
 const client = new Client();
@@ -11,7 +11,7 @@ const databases = new Databases(client);
 
 const databaseID = "67dd77fe000d21d01da5"; // Database ID
 const collectionID = "67dd782400354e955129"; // Collection ID
-const bucketID = "product-images"; // Storage bucket ID
+const bucketID = "product-images"; // Replace with your storage bucket ID
 
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
@@ -22,13 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // ✅ ADD PRODUCT FUNCTION
+    // Add Product
     productForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const title = document.getElementById("title").value.trim();
         const shortDescription = document.getElementById("shortDescription").value.trim();
-        const description = document.getElementById("description").value.trim();
+        const description = document.getElementById("description").value.trim(); // FULL DESCRIPTION
         const price = parseInt(document.getElementById("price").value.trim());
 
         if (!title || !shortDescription || !description || isNaN(price)) {
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // ✅ Upload Images & Store URLs
+        // Upload images and store in an array
         let imageUrls = [];
         for (let i = 1; i <= 5; i++) {
             const fileInput = document.getElementById(`image${i}`);
@@ -56,14 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const productData = {
             title,
             shortDescription,
-            description,
+            description, // Store FULL DESCRIPTION
             price,
-            images: imageUrls // ✅ Ensure this matches Appwrite schema
+            image1: imageUrls // Store as an array
         };
 
         console.log("Sending product data:", productData);
 
-        // ✅ Add product to Appwrite Database
+        // Add product to database
         try {
             const response = await databases.createDocument(databaseID, collectionID, 'unique()', productData);
             console.log("Product added:", response);
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // ✅ FETCH PRODUCTS FUNCTION
+    // Fetch and display products
     async function fetchProducts() {
         try {
             const response = await databases.listDocuments(databaseID, collectionID);
@@ -87,10 +87,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 productDiv.innerHTML = `
                     <h3>${product.title}</h3>
                     <p><strong>Short Description:</strong> ${product.shortDescription}</p>
-                    <p><strong>Full Description:</strong> ${product.description}</p>
+                    <p><strong>Full Description:</strong> ${product.description}</p> <!-- NOW SHOWING FULL DESCRIPTION -->
                     <p><strong>Price:</strong> $${product.price}</p>
-                    ${product.images && product.images.length > 0 ? 
-                        product.images.map(img => `<img src="${img}" width="100">`).join("") 
+                    ${product.image1 && product.image1.length > 0 ? 
+                        product.image1.map(img => `<img src="${img}" width="100">`).join("") 
                         : "No Images"}
                     <br>
                     <button onclick="deleteProduct('${product.$id}')">Delete</button>
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // ✅ DELETE PRODUCT FUNCTION
+    // Delete Product
     window.deleteProduct = async function (productId) {
         if (!confirm("Are you sure you want to delete this product?")) return;
 
@@ -120,10 +120,12 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchProducts(); // Load products on page load
 });
 
-// ✅ FETCH USERS FUNCTION
+
+
+
 async function fetchUsers() {
     try {
-        const response = await databases.listDocuments(databaseID, collectionID);
+        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
         const userList = document.getElementById("user-list");
 
         userList.innerHTML = "";
