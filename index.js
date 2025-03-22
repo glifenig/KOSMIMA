@@ -1,61 +1,58 @@
-// Initialize Appwrite
-const client = new Appwrite.Client();
-client
-    .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite endpoint
-    .setProject("67dd7787000277407b0a"); // Your project ID
+// index.js
 
-const databases = new Appwrite.Databases(client);
-
-async function fetchProducts() {
-    try {
-        const response = await databases.listDocuments(
-            "67dd77fe000d21d01da5", // ✅ Replace with your Database ID
-            "67dd782400354e955129"  // ✅ Replace with your Collection ID
-        );
-
-        if (!response.documents || response.documents.length === 0) {
-            console.warn("No products found.");
-            return;
-        }
-
-        const productList = document.getElementById("product-list");
-        productList.innerHTML = "";
-
-        response.documents.forEach((product) => {
-            const productDiv = document.createElement("div");
-            productDiv.classList.add("product");
-
-            productDiv.innerHTML = `
-                <h2>${product.title}</h2>
-                <p>${product.shortDescription}</p>
-                <img src="${product.image1[0] || 'placeholder.jpg'}" alt="${product.title}" width="200">
-                <br>
-                <a href="product.html?id=${product.$id}">View Details</a>
-                <br>
-                <button onclick="addToCart('${product.$id}', '${product.title}', ${product.price}, '${product.image1[0]}')">Add to Cart</button>
-            `;
-
-            productList.appendChild(productDiv);
-        });
-    } catch (error) {
-        console.error("Error fetching products:", error);
-    }
-}
-
-// Function to Add Product to Cart (Stores in localStorage)
-function addToCart(id, title, price, image) {
+document.addEventListener("DOMContentLoaded", () => {
+    const productList = document.getElementById("product-list");
+    const cartCount = document.getElementById("cart-count");
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    updateCartCount();
 
-    const existingItem = cart.find(item => item.id === id);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ id, title, price, image, quantity: 1 });
+    async function fetchProducts() {
+        try {
+            const response = await databases.listDocuments("67dd77fe000d21d01da5", "67dd782400354e955129");
+            displayProducts(response.documents);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${title} added to cart!`);
-}
+    function displayProducts(products) {
+        productList.innerHTML = "";
+        products.forEach(product => {
+            const productElement = document.createElement("div");
+            productElement.classList.add("product-item");
+            productElement.innerHTML = `
+                <img src="${product.image1[0]}" alt="${product.title}">
+                <h3>${product.title}</h3>
+                <p>${product.shortDescription}</p>
+                <span>$${product.price}</span>
+                <button class="add-to-cart" data-id="${product.$id}" data-title="${product.title}" data-price="${product.price}" data-image="${product.image1[0]}">Add to Cart</button>
+            `;
+            productList.appendChild(productElement);
+        });
+        attachCartEventListeners();
+    }
 
-// Load products when page loads
-document.addEventListener("DOMContentLoaded", fetchProducts);
+    function attachCartEventListeners() {
+        document.querySelectorAll(".add-to-cart").forEach(button => {
+            button.addEventListener("click", (event) => {
+                const id = event.target.getAttribute("data-id");
+                const title = event.target.getAttribute("data-title");
+                const price = event.target.getAttribute("data-price");
+                const image = event.target.getAttribute("data-image");
+                addToCart({ id, title, price, image });
+            });
+        });
+    }
+
+    function addToCart(product) {
+        cart.push(product);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+    }
+
+    function updateCartCount() {
+        cartCount.textContent = cart.length;
+    }
+
+    fetchProducts();
+});
