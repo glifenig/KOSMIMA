@@ -119,3 +119,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchProducts(); // Load products on page load
 });
+
+
+
+
+async function fetchUsers() {
+    try {
+        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID);
+        const userList = document.getElementById("user-list");
+
+        userList.innerHTML = "";
+        response.documents.forEach(user => {
+            const userDiv = document.createElement("div");
+            userDiv.innerHTML = `<p><strong>${user.name}</strong> - ${user.phone} - ${user.email}</p>`;
+            userList.appendChild(userDiv);
+        });
+    } catch (error) {
+        console.error("Error fetching users:", error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", fetchUsers);
