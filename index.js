@@ -1,57 +1,61 @@
-// Initialize Appwrite SDK
+// Initialize Appwrite
 const client = new Appwrite.Client();
+client
+    .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite endpoint
+    .setProject("67dd7787000277407b0a"); // Your project ID
+
 const databases = new Appwrite.Databases(client);
-
-client.setEndpoint('https://cloud.appwrite.io/v1')
-      .setProject('67dd7787000277407b0a');
-
-const cartCount = document.getElementById("cart-count");
-const productsContainer = document.getElementById("products-container");
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-updateCartCount();
 
 async function fetchProducts() {
     try {
         const response = await databases.listDocuments(
-            "67dd77fe000d21d01da5",
-            "67dd782400354e955129"
+            "67dd77fe000d21d01da5", // ✅ Replace with your Database ID
+            "67dd782400354e955129"  // ✅ Replace with your Collection ID
         );
-        displayProducts(response.documents);
+
+        if (!response.documents || response.documents.length === 0) {
+            console.warn("No products found.");
+            return;
+        }
+
+        const productList = document.getElementById("product-list");
+        productList.innerHTML = "";
+
+        response.documents.forEach((product) => {
+            const productDiv = document.createElement("div");
+            productDiv.classList.add("product");
+
+            productDiv.innerHTML = `
+                <h2>${product.title}</h2>
+                <p>${product.shortDescription}</p>
+                <img src="${product.image1[0] || 'placeholder.jpg'}" alt="${product.title}" width="200">
+                <br>
+                <a href="product.html?id=${product.$id}">View Details</a>
+                <br>
+                <button onclick="addToCart('${product.$id}', '${product.title}', ${product.price}, '${product.image1[0]}')">Add to Cart</button>
+            `;
+
+            productList.appendChild(productDiv);
+        });
     } catch (error) {
         console.error("Error fetching products:", error);
     }
 }
 
-function displayProducts(products) {
-    productsContainer.innerHTML = "";
-    products.forEach(product => {
-        const productElement = document.createElement("div");
-        productElement.classList.add("product");
-        productElement.innerHTML = `
-            <img src="${product.image1[0]}" alt="${product.title}">
-            <h3>${product.title}</h3>
-            <p>${product.shortDescription}</p>
-            <span>$${product.price}</span>
-            <button onclick="addToCart('${product.$id}', '${product.title}', ${product.price}, '${product.image1[0]}')">Add to Cart</button>
-            <a href="product.html?id=${product.$id}">View Details</a>
-        `;
-        productsContainer.appendChild(productElement);
-    });
-}
-
+// Function to Add Product to Cart (Stores in localStorage)
 function addToCart(id, title, price, image) {
-    let item = cart.find(product => product.id === id);
-    if (item) {
-        item.quantity += 1;
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingItem = cart.find(item => item.id === id);
+    if (existingItem) {
+        existingItem.quantity += 1;
     } else {
         cart.push({ id, title, price, image, quantity: 1 });
     }
+
     localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount();
+    alert(`${title} added to cart!`);
 }
 
-function updateCartCount() {
-    cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
-}
-
-fetchProducts();
+// Load products when page loads
+document.addEventListener("DOMContentLoaded", fetchProducts);
