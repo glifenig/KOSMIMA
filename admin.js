@@ -20,6 +20,15 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchProducts();
     fetchUsers();
     updateCartCount();
+
+    // ✅ Add Product Form Submission
+    const productForm = document.getElementById("productForm");
+    if (productForm) {
+        productForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            await addProduct();
+        });
+    }
 });
 
 // ✅ Fetch Products
@@ -42,8 +51,8 @@ async function fetchProducts() {
                 <p><strong>Short Description:</strong> ${product.shortDescription}</p>
                 <p><strong>Full Description:</strong> ${product.description}</p>
                 <p><strong>Price:</strong> $${product.price}</p>
-                ${product.image1 && product.image1.length > 0 
-                    ? product.image1.map(img => `<img src="${img}" width="100">`).join("") 
+                ${product.imageUrls && product.imageUrls.length > 0 
+                    ? product.imageUrls.map(img => `<img src="${img}" width="100">`).join("") 
                     : "No Images"}
                 <br>
                 <button onclick="deleteProduct('${product.$id}')">Delete</button>
@@ -56,14 +65,64 @@ async function fetchProducts() {
     }
 }
 
-// ✅ Delete Product (Make it Global)
+// ✅ Add Product
+async function addProduct() {
+    const title = document.getElementById("title").value.trim();
+    const shortDescription = document.getElementById("shortDescription").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const price = parseFloat(document.getElementById("price").value.trim());
+
+    if (!title || !shortDescription || !description || isNaN(price)) {
+        alert("Please fill in all fields correctly.");
+        return;
+    }
+
+    let imageUrls = [];
+
+    for (let i = 1; i <= 5; i++) {
+        const fileInput = document.getElementById(`image${i}`);
+        if (fileInput && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+
+            try {
+                const response = await storage.createFile(bucketID, "unique()", file);
+                const fileID = response.$id;
+                const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${fileID}/view?project=67dd7787000277407b0a`;
+                imageUrls.push(fileUrl);
+            } catch (error) {
+                console.error(`Error uploading image ${i}:`, error);
+            }
+        }
+    }
+
+    const productData = {
+        title,
+        shortDescription,
+        description,
+        price,
+        imageUrls
+    };
+
+    try {
+        const response = await databases.createDocument(databaseID, productCollectionID, "unique()", productData);
+        console.log("Product added:", response);
+        alert("Product added successfully!");
+        document.getElementById("productForm").reset();
+        fetchProducts(); // Refresh product list
+    } catch (error) {
+        console.error("Error adding product:", error);
+        alert(`Failed to add product. Error: ${error.message}`);
+    }
+}
+
+// ✅ Delete Product (Global Function)
 window.deleteProduct = async function (productId) {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
         await databases.deleteDocument(databaseID, productCollectionID, productId);
         alert("Product deleted successfully!");
-        fetchProducts(); // Refresh product list after deletion
+        fetchProducts(); // Refresh list after deletion
     } catch (error) {
         console.error("Error deleting product:", error);
         alert(`Failed to delete product. Error: ${error.message}`);
