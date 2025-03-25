@@ -16,6 +16,52 @@
 
     <button onclick="goBack()">Back to Products</button>
 
+    <div class="container pb-5">
+    <div class="row">
+        <div class="col-lg-5 mt-5">
+            <div class="card mb-3">
+                <img class="card-img img-fluid" id="product-detail" src="placeholder.jpg" alt="Product Image">
+            </div>
+            <div class="row">
+                <div class="col-1 align-self-center">
+                    <a href="#multi-item-example" role="button" data-bs-slide="prev">
+                        <i class="text-dark fas fa-chevron-left"></i>
+                    </a>
+                </div>
+                <div id="multi-item-example" class="col-10 carousel slide carousel-multi-item" data-bs-ride="carousel">
+                    <div class="carousel-inner product-links-wap" role="listbox"></div>
+                </div>
+                <div class="col-1 align-self-center">
+                    <a href="#multi-item-example" role="button" data-bs-slide="next">
+                        <i class="text-dark fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7 mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="h2" id="product-title">Loading...</h1>
+                    <p class="h3 py-2" id="product-price">$0.00</p>
+                    <h6>Short Description:</h6>
+                    <p id="short-description">Loading...</p>
+                    <h6>Description:</h6>
+                    <p id="long-description">Loading...</p>
+                    <div class="row pb-3">
+                        <div class="col d-grid">
+                            <button id="add-to-cart" class="btn btn-success btn-lg">Add to cart</button>
+                        </div>
+                        <div class="col d-grid">
+                            <button class="btn btn-success btn-lg">Contact Us</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
     <script src="product.js"></script>
 </body>
 </html>
