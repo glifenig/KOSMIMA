@@ -17,7 +17,7 @@ async function fetchProductDetails() {
     const productId = getQueryParam("id"); // Get product ID from URL
 
     if (!productId) {
-        document.getElementById("product-details").innerHTML = "<p>Product not found.</p>";
+        document.getElementById("product-title").innerText = "Product not found.";
         return;
     }
 
@@ -28,37 +28,44 @@ async function fetchProductDetails() {
             productId
         );
 
-        const productDetails = document.getElementById("product-details");
+        // Update Product Details
+        document.getElementById("product-title").innerText = response.title;
+        document.getElementById("product-price").innerText = `$${response.price}`;
+        document.getElementById("short-description").innerText = response.shortDescription;
+        document.getElementById("long-description").innerText = response.description;
 
-        // Generate HTML for all product images in a grid layout
-        let imagesHTML = "";
-        if (response.image1 && response.image1.length > 0) {
-            imagesHTML = response.image1
-                .map(
-                    (img) => `
-                    <div class="image-container">
-                        <img src="${img}" alt="${response.title}">
-                    </div>
-                `
-                )
-                .join("");
+        // Set Main Image
+        if (response.image1.length > 0) {
+            document.getElementById("product-detail").src = response.image1[0];
         }
 
-        // Display product details
-        productDetails.innerHTML = `
-            <h2>${response.title}</h2>
-            <div class="image-gallery">${imagesHTML}</div>
-            <p><strong>Short Description:</strong> ${response.shortDescription}</p>
-            <p><strong>Description:</strong> ${response.description}</p>
-            <p><strong>Price:</strong> $${response.price}</p>
-            <p><strong>Category:</strong> ${response.category}</p>
-            <p><strong>Tags:</strong> ${response.tags ? response.tags.join(", ") : "No tags"}</p>
-            <button onclick="addToCart('${response.$id}', '${response.title}', ${response.price}, '${response.image1[0]}')">Add to Cart</button>
-            <button class="back-button" onclick="goBack()">Back to Products</button>
-        `;
+        // Populate the Image Carousel
+        let carouselInner = document.querySelector(".carousel-inner");
+        carouselInner.innerHTML = ""; // Clear existing content
+
+        response.image1.forEach((imageUrl, index) => {
+            let isActive = index === 0 ? "active" : "";
+            let itemHtml = `
+                <div class="carousel-item ${isActive}">
+                    <div class="row">
+                        <div class="col-4">
+                            <a href="#"><img class="card-img img-fluid" src="${imageUrl}" alt="Product Image ${index + 1}"></a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            carouselInner.innerHTML += itemHtml;
+        });
+
+        // Update Add to Cart button
+        document.getElementById("add-to-cart").setAttribute(
+            "onclick",
+            `addToCart('${response.$id}', '${response.title}', ${response.price}, '${response.image1[0]}')`
+        );
+
     } catch (error) {
         console.error("Error fetching product details:", error);
-        document.getElementById("product-details").innerHTML = "<p>Failed to load product.</p>";
+        document.getElementById("product-title").innerText = "Failed to load product.";
     }
 }
 
@@ -75,11 +82,6 @@ function addToCart(id, title, price, image) {
 
     localStorage.setItem("cart", JSON.stringify(cart));
     alert(`${title} added to cart!`);
-}
-
-// Function to Go Back to Product List
-function goBack() {
-    window.location.href = "index.html";
 }
 
 // Load product details when page loads
