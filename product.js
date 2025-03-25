@@ -30,22 +30,31 @@ async function fetchProductDetails() {
 
         const productDetails = document.getElementById("product-details");
 
-        // Generate HTML for all product images
+        // Generate HTML for all product images in a grid layout
         let imagesHTML = "";
         if (response.image1 && response.image1.length > 0) {
-            imagesHTML = response.image1.map(img => `<img src="${img}" alt="${response.title}" width="300">`).join("");
+            imagesHTML = response.image1
+                .map(
+                    (img) => `
+                    <div class="image-container">
+                        <img src="${img}" alt="${response.title}">
+                    </div>
+                `
+                )
+                .join("");
         }
 
         // Display product details
         productDetails.innerHTML = `
             <h2>${response.title}</h2>
-            <div>${imagesHTML}</div>
+            <div class="image-gallery">${imagesHTML}</div>
             <p><strong>Short Description:</strong> ${response.shortDescription}</p>
             <p><strong>Description:</strong> ${response.description}</p>
             <p><strong>Price:</strong> $${response.price}</p>
             <p><strong>Category:</strong> ${response.category}</p>
             <p><strong>Tags:</strong> ${response.tags ? response.tags.join(", ") : "No tags"}</p>
             <button onclick="addToCart('${response.$id}', '${response.title}', ${response.price}, '${response.image1[0]}')">Add to Cart</button>
+            <button class="back-button" onclick="goBack()">Back to Products</button>
         `;
     } catch (error) {
         console.error("Error fetching product details:", error);
