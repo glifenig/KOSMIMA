@@ -1,11 +1,10 @@
 // Initialize Appwrite
 const client = new Appwrite.Client();
 client
-    .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite endpoint
-    .setProject("67dd7787000277407b0a"); // Your project ID
+    .setEndpoint("https://cloud.appwrite.io/v1") // Appwrite endpoint
+    .setProject("67dd7787000277407b0a"); // Project ID
 
 const databases = new Appwrite.Databases(client);
-const storage = new Appwrite.Storage(client);
 
 // Function to get URL parameter
 function getQueryParam(param) {
@@ -37,19 +36,19 @@ async function fetchProductDetails() {
         document.querySelector("p.description").innerText = response.description || "No description";
         document.querySelector("p.amount").innerText = response.price ? `$${response.price}` : "No price";
 
-        // Fetch images from Appwrite storage bucket
-        if (response.images && response.images.length > 0) {
-            const imageElements = document.querySelectorAll("img");
-            for (let i = 0; i < imageElements.length; i++) {
-                if (response.images[i]) {
-                    let imageUrl = storage.getFilePreview("product-images", response.images[i]);
-                    imageElements[i].src = imageUrl;
-                    imageElements[i].alt = `Product Image ${i + 1}`;
-                }
+        // Convert stored image string to an array
+        let imageUrls = response.image1 ? response.image1.split(",") : [];
+
+        // Select all <img> elements
+        const imageElements = document.querySelectorAll("img");
+
+        // Assign images to <img> elements
+        imageUrls.forEach((img, index) => {
+            if (imageElements[index]) {
+                imageElements[index].src = img.trim(); // Trim to remove extra spaces
+                imageElements[index].alt = `Product Image ${index + 1}`;
             }
-        } else {
-            console.warn("No images found for this product.");
-        }
+        });
 
     } catch (error) {
         console.error("Error fetching product details:", error);
