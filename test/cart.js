@@ -13,7 +13,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let row = document.createElement("tr");
             row.innerHTML = `
-                <td>${item.title}</td>
+                <td>
+                    <a href="shop-single.html?product=${item.id}" class="text-decoration-none">
+                        ${item.title}
+                    </a>
+                </td>
                 <td>₦${item.price.toLocaleString()}</td>
                 <td>${item.quantity}</td>
                 <td>₦${itemTotal.toLocaleString()}</td>
