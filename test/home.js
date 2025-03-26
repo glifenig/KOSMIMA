@@ -1,3 +1,17 @@
+// Import Appwrite SDK (Ensure this is included in your HTML)
+const { Client, Databases, Query, Storage } = Appwrite;
+
+// Initialize Appwrite Client
+const client = new Client();
+client.setEndpoint("https://cloud.appwrite.io/v1").setProject("67dd7787000277407b0a"); // Your Project ID
+
+// Initialize Appwrite Services
+const databases = new Databases(client);
+const storage = new Storage(client);
+const databaseID = "67dd77fe000d21d01da5"; // Your Database ID
+const collectionID = "67dd782400354e955129"; // Your Collection ID
+const bucketID = "product-images"; // Your Storage Bucket ID
+
 document.addEventListener("DOMContentLoaded", async function () {
     const latestProductsContainer = document.getElementById("latestProducts");
     const cartCount = document.getElementById("cart-count");
@@ -20,11 +34,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             latestProductsContainer.innerHTML = ""; // Clear previous content
 
             response.documents.forEach((product) => {
+                // Fetch product image from Appwrite Storage
+                const productImage = product.image1 && product.image1.length > 0 
+                    ? `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${product.image1[0]}/view?project=67dd7787000277407b0a`
+                    : 'placeholder.jpg'; // Use a placeholder if no image
+
                 const productDiv = document.createElement("div");
                 productDiv.classList.add("col-12", "col-md-4", "mb-4");
-
-                const productImage = product.image1 && product.image1.length > 0 ? product.image1[0] : 'placeholder.jpg';
-
                 productDiv.innerHTML = `
                     <div style="background-color: whitesmoke;" class="card h-100">
                         <a href="shop-single.html?product=${product.$id}">
