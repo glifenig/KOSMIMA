@@ -28,44 +28,35 @@ async function fetchProductDetails() {
             productId
         );
 
-        const productDetails = document.getElementById("product-details");
+        // Set main image
+        document.getElementById("mainImage").src = response.image1[0];
 
-        // Generate HTML for all product images
-        let imagesHTML = "";
-        if (response.image1 && response.image1.length > 0) {
-            imagesHTML = response.image1.map(img => `<img src="${img}" alt="${response.title}" width="300">`).join("");
-        }
+        // Generate thumbnail images
+        const thumbnailsContainer = document.getElementById("thumbnails");
+        thumbnailsContainer.innerHTML = response.image1.map(img => 
+            `<img src="${img}" class="thumbnail" onclick="changeMainImage('${img}')">`
+        ).join("");
 
-        // Display product details
-        productDetails.innerHTML = `
-            <h2>${response.title}</h2>
-            <div>${imagesHTML}</div>
-            <p><strong>Short Description:</strong> ${response.shortDescription}</p>
-            <p><strong>Description:</strong> ${response.description}</p>
-            <p><strong>Price:</strong> $${response.price}</p>
-            <p><strong>Category:</strong> ${response.category}</p>
-            <p><strong>Tags:</strong> ${response.tags ? response.tags.join(", ") : "No tags"}</p>
-            <button onclick="addToCart('${response.$id}', '${response.title}', ${response.price}, '${response.image1[0]}')">Add to Cart</button>
-        `;
+        // Set product details
+        document.getElementById("title").innerText = response.title;
+        document.getElementById("shortDescription").innerText = response.shortDescription;
+        document.getElementById("description").innerText = response.description;
+        document.getElementById("price").innerText = response.price;
+
     } catch (error) {
         console.error("Error fetching product details:", error);
         document.getElementById("product-details").innerHTML = "<p>Failed to load product.</p>";
     }
 }
 
+// Function to Change Main Image
+function changeMainImage(imageUrl) {
+    document.getElementById("mainImage").src = imageUrl;
+}
+
 // Function to Add Product to Cart
-function addToCart(id, title, price, image) {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    const existingItem = cart.find(item => item.id === id);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ id, title, price, image, quantity: 1 });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${title} added to cart!`);
+function addToCart() {
+    alert("Product added to cart!");
 }
 
 // Function to Go Back to Product List
