@@ -27,7 +27,7 @@ async function fetchProducts() {
                             </div>
                         </div>
                         <div class="card-body">
-                            <a href="shop-single.html?id=${product.$id}" class="h3 text-decoration-none">${product.title}</a>
+                            <a href="product.html?id=${product.$id}" class="h3 text-decoration-none">${product.title}</a>
                             <p class="text-muted">${product.shortDescription}</p> <!-- Short Note Added Here -->
                             <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
                                 <li>M/L/X/XL</li>
