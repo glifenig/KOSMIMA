@@ -13,7 +13,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let row = document.createElement("tr");
             row.innerHTML = `
-                <td>${item.title}</td>
+                <td>
+                    <a href="shop-single.html?product=${item.id}">
+                        <img src="${item.image}" alt="${item.title}" width="60">
+                    </a>
+                </td>
+                <td>
+                    <a href="shop-single.html?product=${item.id}" class="text-decoration-none">${item.title}</a>
+                </td>
                 <td>₦${item.price.toLocaleString()}</td>
                 <td>${item.quantity}</td>
                 <td>₦${itemTotal.toLocaleString()}</td>
@@ -26,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         cartTotal.textContent = totalPrice.toLocaleString();
 
-        // Attach event listeners to remove buttons
         document.querySelectorAll(".remove-item").forEach((button) => {
             button.addEventListener("click", function () {
                 let index = this.getAttribute("data-index");
