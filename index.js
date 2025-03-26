@@ -12,19 +12,14 @@ async function fetchProducts() {
 
         response.documents.forEach(product => {
             productHTML += `
-                <div class="col-md-4">
+                <div class="col-lg-4 col-md-6 col-sm-12">
                     <div class="card mb-4 product-wap rounded-0" style="background-color: whitesmoke;">
                         <div class="card rounded-0">
                             <img class="card-img rounded-0 img-fluid" src="${product.image1[0]}" alt="${product.title}">
-                            <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
-                            </div>
                         </div>
                         <div class="card-body">
                             <a href="shop-single.html?id=${product.$id}" class="h3 text-decoration-none">${product.title}</a>
-                            <p class="text-muted">${product.shortDescription}</p> 
-                            <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                                <li>M/L/X/XL</li>
-                            </ul>
+                            <p class="text-muted">${product.shortDescription}</p>
                             <p class="text-center mb-0">$${product.price}</p>
                         </div>
                     </div>
