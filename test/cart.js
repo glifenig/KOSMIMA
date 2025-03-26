@@ -1,52 +1,32 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const cartItemsContainer = document.getElementById("cart-items");
-    const cartTotal = document.getElementById("cart-total");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Shopping Cart</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items">
+                <!-- Cart items will be inserted here dynamically -->
+            </tbody>
+        </table>
+        <h4>Total: ₦<span id="cart-total">0</span></h4>
+        <button class="btn btn-success">Checkout</button>
+    </div>
 
-    function loadCart() {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        cartItemsContainer.innerHTML = "";
-        let totalPrice = 0;
-
-        cart.forEach((item, index) => {
-            let itemTotal = item.price * item.quantity;
-            totalPrice += itemTotal;
-
-            let row = document.createElement("tr");
-            row.innerHTML = `
-                <td>
-                    <a href="shop-single.html?product=${item.id}">
-                        <img src="${item.image}" alt="${item.title}" width="60">
-                    </a>
-                </td>
-                <td>
-                    <a href="shop-single.html?product=${item.id}" class="text-decoration-none">${item.title}</a>
-                </td>
-                <td>₦${item.price.toLocaleString()}</td>
-                <td>${item.quantity}</td>
-                <td>₦${itemTotal.toLocaleString()}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm remove-item" data-index="${index}">Remove</button>
-                </td>
-            `;
-            cartItemsContainer.appendChild(row);
-        });
-
-        cartTotal.textContent = totalPrice.toLocaleString();
-
-        document.querySelectorAll(".remove-item").forEach((button) => {
-            button.addEventListener("click", function () {
-                let index = this.getAttribute("data-index");
-                removeFromCart(index);
-            });
-        });
-    }
-
-    function removeFromCart(index) {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        cart.splice(index, 1);
-        localStorage.setItem("cart", JSON.stringify(cart));
-        loadCart();
-    }
-
-    loadCart();
-});
+    <script src="cart.js"></script>
+</body>
+</html>
