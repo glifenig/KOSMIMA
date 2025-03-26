@@ -17,7 +17,7 @@ async function fetchProductDetails() {
     const productId = getQueryParam("id"); // Get product ID from URL
 
     if (!productId) {
-        document.getElementById("product-title").innerText = "Product not found.";
+        document.getElementById("product-details").innerHTML = "<p>Product not found.</p>";
         return;
     }
 
@@ -28,61 +28,20 @@ async function fetchProductDetails() {
             productId
         );
 
-        // Update Product Details
-        document.getElementById("product-title").innerText = response.title;
-        document.getElementById("product-price").innerText = `$${response.price}`;
-        document.getElementById("short-description").innerText = response.shortDescription;
-        document.getElementById("long-description").innerText = response.description;
+        // Set main image
+        document.getElementById("mainImage").src = response.image1[0];
 
-        // Set Main Image
-        if (response.image1.length > 0) {
-            document.getElementById("product-detail").src = response.image1[0];
-        }
+        // Generate thumbnail images
+        const thumbnailsContainer = document.getElementById("thumbnails");
+        thumbnailsContainer.innerHTML = response.image1.map(img => 
+            `<img src="${img}" class="thumbnail" onclick="changeMainImage('${img}')">`
+        ).join("");
 
-        // Populate the Image Carousel
-        let carouselInner = document.querySelector(".carousel-inner");
-        carouselInner.innerHTML = ""; // Clear existing content
-
-        response.image1.forEach((imageUrl, index) => {
-            let isActive = index === 0 ? "active" : "";
-            let itemHtml = `
-                <div class="carousel-item ${isActive}">
-                    <div class="row">
-                        <div class="col-4">
-                            <a href="#"><img class="card-img img-fluid" src="${imageUrl}" alt="Product Image ${index + 1}"></a>
-                        </div>
-                    </div>
-                </div>
-            `;
-            carouselInner.innerHTML += itemHtml;
-        });
-
-        // Update Add to Cart button
-        document.getElementById("add-to-cart").setAttribute(
-            "onclick",
-            `addToCart('${response.$id}', '${response.title}', ${response.price}, '${response.image1[0]}')`
-        );
+        // Set product details
+        document.getElementById("title").innerText = response.title;
+        document.getElementById("shortDescription").innerText = response.shortDescription;
+        document.getElementById("description").innerText = response.description;
+        document.getElementById("price").innerText = response.price;
 
     } catch (error) {
-        console.error("Error fetching product details:", error);
-        document.getElementById("product-title").innerText = "Failed to load product.";
-    }
-}
-
-// Function to Add Product to Cart
-function addToCart(id, title, price, image) {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    const existingItem = cart.find(item => item.id === id);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ id, title, price, image, quantity: 1 });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert(`${title} added to cart!`);
-}
-
-// Load product details when page loads
-document.addEventListener("DOMContentLoaded", fetchProductDetails);
+        console.error("Error fetching
