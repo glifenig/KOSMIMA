@@ -1,24 +1,17 @@
-// Initialize Appwrite
-const client = new Appwrite.Client();
-client
-    .setEndpoint("https://cloud.appwrite.io/v1") // ✅ Replace with your Appwrite endpoint
-    .setProject("67dd7787000277407b0a"); // ✅ Replace with your Project ID
-
-const databases = new Appwrite.Databases(client);
-
-// Function to Fetch and Display Products
 async function fetchProducts() {
     try {
         const response = await databases.listDocuments(
-            "67dd77fe000d21d01da5", // ✅ Replace with your Database ID
-            "67dd782400354e955129"  // ✅ Replace with your Collection ID
+            "67dd77fe000d21d01da5",
+            "67dd782400354e955129"
         );
 
-        const productList = document.getElementById("product-list"); // ✅ Make sure this exists in your HTML
+        const productList = document.getElementById("product-list");
         productList.innerHTML = ""; // Clear previous content
 
+        let productHTML = ""; // Store all products before adding to DOM
+
         response.documents.forEach(product => {
-            let productHTML = `
+            productHTML += `
                 <div class="col-md-4">
                     <div class="card mb-4 product-wap rounded-0" style="background-color: whitesmoke;">
                         <div class="card rounded-0">
@@ -28,7 +21,7 @@ async function fetchProducts() {
                         </div>
                         <div class="card-body">
                             <a href="shop-single.html?id=${product.$id}" class="h3 text-decoration-none">${product.title}</a>
-                            <p class="text-muted">${product.shortDescription}</p> <!-- Short Note Added Here -->
+                            <p class="text-muted">${product.shortDescription}</p> 
                             <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
                                 <li>M/L/X/XL</li>
                             </ul>
@@ -37,9 +30,9 @@ async function fetchProducts() {
                     </div>
                 </div>
             `;
-
-            productList.innerHTML += productHTML;
         });
+
+        productList.innerHTML = productHTML; // Add all products at once
 
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -47,5 +40,4 @@ async function fetchProducts() {
     }
 }
 
-// Load products when page loads
 document.addEventListener("DOMContentLoaded", fetchProducts);
