@@ -35,19 +35,46 @@ document.addEventListener("DOMContentLoaded", async function () {
                         </a>
                         <div class="card-body">
                             <ul class="list-unstyled d-flex justify-content-between">
-                                <li class="text-muted text-right">$${product.price.toFixed(2)}</li>
+                                <li class="text-muted text-right"><strong>₦${product.price.toLocaleString()}</strong></li>
                             </ul>
                             <a href="shop-single.html?product=${product.$id}" class="h2 text-decoration-none text-dark">${product.title}</a>
                             <p class="card-text">${product.shortDescription}</p>
+                            <button class="btn btn-primary add-to-cart" data-id="${product.$id}" data-title="${product.title}" data-price="${product.price}">Add to Cart</button>
                         </div>
                     </div>
                 `;
 
                 latestProductsContainer.appendChild(productDiv);
             });
+
+            // Attach event listeners to "Add to Cart" buttons
+            document.querySelectorAll(".add-to-cart").forEach((button) => {
+                button.addEventListener("click", function () {
+                    const productId = this.getAttribute("data-id");
+                    const productTitle = this.getAttribute("data-title");
+                    const productPrice = this.getAttribute("data-price");
+
+                    addToCart(productId, productTitle, productPrice);
+                });
+            });
         } catch (error) {
             console.error("Error fetching latest products:", error);
         }
+    }
+
+    function addToCart(id, title, price) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Check if item is already in cart
+        let existingProduct = cart.find(item => item.id === id);
+        if (existingProduct) {
+            existingProduct.quantity += 1;
+        } else {
+            cart.push({ id, title, price, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(`${title} added to cart!`);
     }
 
     fetchLatestProducts();
