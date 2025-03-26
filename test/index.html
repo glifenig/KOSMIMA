@@ -16,6 +16,7 @@
 
     <title>Kosmima | Home</title>
    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons/mobirise-icons.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons-bold/mobirise-icons-bold.css">
@@ -368,67 +369,9 @@
                     </p>
                 </div>
             </div>
-            <div class="row">
-                 <div id="product-list"></div>
-
-                <div class="col-12 col-md-4 mb-4">
-                    <div  style="background-color: whitesmoke;" class="card h-100">
-                        <a href="shop-single.html">
-                            <img src="5.png" class="card-img-top" alt="...">
-                        </a>
-                        <div class="card-body">
-                            <ul class="list-unstyled d-flex justify-content-between">
-                                
-                                <li class="text-muted text-right">$240.00</li>
-                            </ul>
-                            <a href="shop-single.html" class="h2 text-decoration-none text-dark">Acer M34</a>
-                            <p class="card-text">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt in culpa qui officia deserunt.
-                            </p>
-                            <p class="text-muted"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-4 mb-4">
-                    <div  style="background-color: whitesmoke;" class="card h-100">
-                        <a href="shop-single.html">
-                            <img src="5.png" class="card-img-top" alt="...">
-                        </a>
-                        <div class="card-body">
-                            <ul class="list-unstyled d-flex justify-content-between">
-                                
-                                <li class="text-muted text-right">$240.00</li>
-                            </ul>
-                            <a href="shop-single.html" class="h2 text-decoration-none text-dark">Acer M34</a>
-                            <p class="card-text">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt in culpa qui officia deserunt.
-                            </p>
-                            <p class="text-muted"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-4 mb-4">
-                    <div  style="background-color: whitesmoke;" class="card h-100">
-                        <a href="shop-single.html">
-                            <img src="5.png" class="card-img-top" alt="...">
-                        </a>
-                        <div class="card-body">
-                            <ul class="list-unstyled d-flex justify-content-between">
-                                
-                                <li class="text-muted text-right">$240.00</li>
-                            </ul>
-                            <a href="shop-single.html" class="h2 text-decoration-none text-dark">Acer M34</a>
-                            <p class="card-text">
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt in culpa qui officia deserunt.
-                            </p>
-                            <p class="text-muted"></p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+           <div class="row" id="latestProducts">
+            <!-- Latest products will be inserted here dynamically -->
+        </div>
             <center> <div class="mbr-section-btn"><a class='btn btn-md btn-secondary-outline display-4' href='store.html'>Visit our store</a></div></center>
         </div>
     </section>
@@ -592,7 +535,8 @@
 
 
     </div>
- <script src="index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="home.js"></script>
     <script src="assets/web/assets/jquery/jquery.min.js"></script>
     <script src="assets/popper/popper.min.js"></script>
     <script src="assets/tether/tether.min.js"></script>
