@@ -11,7 +11,7 @@ const databases = new Databases(client);
 
 const databaseID = "67dd77fe000d21d01da5"; // Database ID
 const collectionID = "67dd782400354e955129"; // Collection ID
-const bucketID = "product-images"; // Storage Bucket ID
+const bucketID = "product-images"; // Storage bucket ID
 
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
@@ -20,6 +20,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!productForm) {
         console.error("Product form not found!");
         return;
+    }
+
+    // Function to upload a file and return the URL
+    async function uploadFile(file) {
+        if (!file) return ""; // Return empty string if no file is uploaded
+        try {
+            const response = await storage.createFile(bucketID, 'unique()', file);
+            return `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${response.$id}/view?project=67dd7787000277407b0a`;
+        } catch (error) {
+            console.error(`Error uploading file:`, error);
+            return "";
+        }
     }
 
     // Add Product
@@ -36,31 +48,23 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Upload images and store them separately
-        let images = { image1: "", image2: "", image3: "", image4: "", image5: "" };
-
-        for (let i = 1; i <= 5; i++) {
-            const fileInput = document.getElementById(`image${i}`);
-            if (fileInput && fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                try {
-                    const response = await storage.createFile(bucketID, `unique()`, file);
-                    const fileID = response.$id;
-                    const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${fileID}/view?project=67dd7787000277407b0a`;
-
-                    images[`image${i}`] = fileUrl; // Assign image URL to the correct field
-                } catch (error) {
-                    console.error(`Error uploading image${i}:`, error);
-                }
-            }
-        }
+        // Upload images one by one
+        const image1 = await uploadFile(document.getElementById("image1").files[0]);
+        const image2 = await uploadFile(document.getElementById("image2").files[0]);
+        const image3 = await uploadFile(document.getElementById("image3").files[0]);
+        const image4 = await uploadFile(document.getElementById("image4").files[0]);
+        const image5 = await uploadFile(document.getElementById("image5").files[0]);
 
         const productData = {
             title,
             shortDescription,
-            description,
+            description, 
             price,
-            ...images, // Spread images object into productData
+            image1, 
+            image2, 
+            image3, 
+            image4, 
+            image5
         };
 
         console.log("Sending product data:", productData);
@@ -91,13 +95,16 @@ document.addEventListener("DOMContentLoaded", function () {
                     <p><strong>Short Description:</strong> ${product.shortDescription}</p>
                     <p><strong>Full Description:</strong> ${product.description}</p>
                     <p><strong>Price:</strong> $${product.price}</p>
-
-                    ${product.image1 ? `<img src="${product.image1}" width="100">` : ""}
-                    ${product.image2 ? `<img src="${product.image2}" width="100">` : ""}
-                    ${product.image3 ? `<img src="${product.image3}" width="100">` : ""}
-                    ${product.image4 ? `<img src="${product.image4}" width="100">` : ""}
-                    ${product.image5 ? `<img src="${product.image5}" width="100">` : ""}
-
+                    
+                    <div>
+                        <strong>Product Images:</strong><br>
+                        ${product.image1 ? `<img src="${product.image1}" width="150" alt="Image 1"><br>` : ""}
+                        ${product.image2 ? `<img src="${product.image2}" width="150" alt="Image 2"><br>` : ""}
+                        ${product.image3 ? `<img src="${product.image3}" width="150" alt="Image 3"><br>` : ""}
+                        ${product.image4 ? `<img src="${product.image4}" width="150" alt="Image 4"><br>` : ""}
+                        ${product.image5 ? `<img src="${product.image5}" width="150" alt="Image 5"><br>` : ""}
+                    </div>
+                    
                     <br>
                     <button onclick="deleteProduct('${product.$id}')">Delete</button>
                     <hr>
