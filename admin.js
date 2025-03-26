@@ -11,7 +11,7 @@ const databases = new Databases(client);
 
 const databaseID = "67dd77fe000d21d01da5"; // Database ID
 const collectionID = "67dd782400354e955129"; // Collection ID
-const bucketID = "product-images"; // Storage bucket ID
+const bucketID = "product-images"; // Storage Bucket ID
 
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
@@ -22,14 +22,14 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // Function to upload a file and return the URL
+    // Function to upload a file and return its URL
     async function uploadFile(file) {
-        if (!file) return ""; // Return empty string if no file is uploaded
+        if (!file) return "";
         try {
             const response = await storage.createFile(bucketID, 'unique()', file);
             return `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${response.$id}/view?project=67dd7787000277407b0a`;
         } catch (error) {
-            console.error(`Error uploading file:`, error);
+            console.error("Error uploading file:", error);
             return "";
         }
     }
@@ -58,12 +58,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const productData = {
             title,
             shortDescription,
-            description, 
+            description,
             price,
-            image1, 
-            image2, 
-            image3, 
-            image4, 
+            image1, // Store each image separately
+            image2,
+            image3,
+            image4,
             image5
         };
 
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Product added:", response);
             alert("Product added successfully!");
             productForm.reset();
-            fetchProducts(); // Refresh product list
+            fetchProducts();
         } catch (error) {
             console.error("Error adding product:", error);
             alert(`Failed to add product. Error: ${error.message}`);
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function fetchProducts() {
         try {
             const response = await databases.listDocuments(databaseID, collectionID);
-            productList.innerHTML = ""; // Clear previous list
+            productList.innerHTML = "";
 
             response.documents.forEach((product) => {
                 const productDiv = document.createElement("div");
@@ -95,15 +95,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     <p><strong>Short Description:</strong> ${product.shortDescription}</p>
                     <p><strong>Full Description:</strong> ${product.description}</p>
                     <p><strong>Price:</strong> $${product.price}</p>
-                    
-                    <div>
-                        <strong>Product Images:</strong><br>
-                        ${product.image1 ? `<img src="${product.image1}" width="150" alt="Image 1"><br>` : ""}
-                        ${product.image2 ? `<img src="${product.image2}" width="150" alt="Image 2"><br>` : ""}
-                        ${product.image3 ? `<img src="${product.image3}" width="150" alt="Image 3"><br>` : ""}
-                        ${product.image4 ? `<img src="${product.image4}" width="150" alt="Image 4"><br>` : ""}
-                        ${product.image5 ? `<img src="${product.image5}" width="150" alt="Image 5"><br>` : ""}
-                    </div>
+
+                    ${product.image1 ? `<img src="${product.image1}" width="100">` : ""}
+                    ${product.image2 ? `<img src="${product.image2}" width="100">` : ""}
+                    ${product.image3 ? `<img src="${product.image3}" width="100">` : ""}
+                    ${product.image4 ? `<img src="${product.image4}" width="100">` : ""}
+                    ${product.image5 ? `<img src="${product.image5}" width="100">` : ""}
                     
                     <br>
                     <button onclick="deleteProduct('${product.$id}')">Delete</button>
@@ -123,12 +120,12 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             await databases.deleteDocument(databaseID, collectionID, productId);
             alert("Product deleted successfully!");
-            fetchProducts(); // Refresh list after deletion
+            fetchProducts();
         } catch (error) {
             console.error("Error deleting product:", error);
             alert(`Failed to delete product. Error: ${error.message}`);
         }
     };
 
-    fetchProducts(); // Load products on page load
+    fetchProducts();
 });
