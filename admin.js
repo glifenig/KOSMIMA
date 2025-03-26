@@ -11,7 +11,7 @@ const databases = new Databases(client);
 
 const databaseID = "67dd77fe000d21d01da5"; // Database ID
 const collectionID = "67dd782400354e955129"; // Collection ID
-const bucketID = "product-images"; // Replace with your storage bucket ID
+const bucketID = "product-images"; // Storage Bucket ID
 
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const title = document.getElementById("title").value.trim();
         const shortDescription = document.getElementById("shortDescription").value.trim();
-        const description = document.getElementById("description").value.trim(); // FULL DESCRIPTION
+        const description = document.getElementById("description").value.trim();
         const price = parseInt(document.getElementById("price").value.trim());
 
         if (!title || !shortDescription || !description || isNaN(price)) {
@@ -36,8 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Upload images and store in an array
-        let imageUrls = [];
+        // Upload images and store them separately
+        let images = { image1: "", image2: "", image3: "", image4: "", image5: "" };
+
         for (let i = 1; i <= 5; i++) {
             const fileInput = document.getElementById(`image${i}`);
             if (fileInput && fileInput.files.length > 0) {
@@ -46,7 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     const response = await storage.createFile(bucketID, `unique()`, file);
                     const fileID = response.$id;
                     const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${fileID}/view?project=67dd7787000277407b0a`;
-                    imageUrls.push(fileUrl);
+
+                    images[`image${i}`] = fileUrl; // Assign image URL to the correct field
                 } catch (error) {
                     console.error(`Error uploading image${i}:`, error);
                 }
@@ -56,9 +58,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const productData = {
             title,
             shortDescription,
-            description, // Store FULL DESCRIPTION
+            description,
             price,
-            image1: imageUrls // Store as an array
+            ...images, // Spread images object into productData
         };
 
         console.log("Sending product data:", productData);
@@ -87,11 +89,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 productDiv.innerHTML = `
                     <h3>${product.title}</h3>
                     <p><strong>Short Description:</strong> ${product.shortDescription}</p>
-                    <p><strong>Full Description:</strong> ${product.description}</p> <!-- NOW SHOWING FULL DESCRIPTION -->
+                    <p><strong>Full Description:</strong> ${product.description}</p>
                     <p><strong>Price:</strong> $${product.price}</p>
-                    ${product.image1 && product.image1.length > 0 ? 
-                        product.image1.map(img => `<img src="${img}" width="100">`).join("") 
-                        : "No Images"}
+
+                    ${product.image1 ? `<img src="${product.image1}" width="100">` : ""}
+                    ${product.image2 ? `<img src="${product.image2}" width="100">` : ""}
+                    ${product.image3 ? `<img src="${product.image3}" width="100">` : ""}
+                    ${product.image4 ? `<img src="${product.image4}" width="100">` : ""}
+                    ${product.image5 ? `<img src="${product.image5}" width="100">` : ""}
+
                     <br>
                     <button onclick="deleteProduct('${product.$id}')">Delete</button>
                     <hr>
@@ -119,5 +125,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchProducts(); // Load products on page load
 });
-
-
