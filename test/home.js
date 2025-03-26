@@ -1,105 +1,115 @@
-// Import Appwrite SDK (Ensure this is included in your HTML)
-const { Client, Databases, Query, Storage } = Appwrite;
+// Appwrite Configuration
+const APPWRITE_ENDPOINT = "https://cloud.appwrite.io/v1";
+const PROJECT_ID = "67dd7787000277407b0a";
+const DATABASE_ID = "67dd77fe000d21d01da5";
+const COLLECTION_ID = "67dd782400354e955129";
+const BUCKET_ID = "product-images";
+const API_KEY = "standard_4a497e759ed804bf6e0d8dc3d303cb61ede2962fa27ffdf1a8d82317cf5f6448c2a77a827b1c273f487d593eb27fcfa619a0af7c23f0518062aaeacd9fde448040f03f403c734f0636d9596a9864be6ba130f634727ff9e47afd1c931d1d02d16c84c51f302b5741d77499b6d511d44b8d97882367e534d72c7bf43cca7740d9";
 
-// Initialize Appwrite Client
+// Appwrite SDK Initialization
+const { Client, Databases, Storage, Query } = Appwrite;
 const client = new Client();
-client.setEndpoint("https://cloud.appwrite.io/v1").setProject("67dd7787000277407b0a"); // Your Project ID
-
-// Initialize Appwrite Services
+client.setEndpoint(APPWRITE_ENDPOINT).setProject(PROJECT_ID);
 const databases = new Databases(client);
 const storage = new Storage(client);
-const databaseID = "67dd77fe000d21d01da5"; // Your Database ID
-const collectionID = "67dd782400354e955129"; // Your Collection ID
-const bucketID = "product-images"; // Your Storage Bucket ID
 
-document.addEventListener("DOMContentLoaded", async function () {
-    const latestProductsContainer = document.getElementById("latestProducts");
-    const cartCount = document.getElementById("cart-count");
+// Elements
+const latestProductsContainer = document.getElementById("latest-products");
+const cartCount = document.getElementById("cart-count");
 
-    // Update cart count in the navbar
-    function updateCartCount() {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        cartCount.textContent = totalItems;
-    }
+// Fetch latest 3 products from Appwrite
+async function fetchLatestProducts() {
+    try {
+        const response = await databases.listDocuments(DATABASE_ID, COLLECTION_ID, [
+            Query.orderDesc("$createdAt"),
+            Query.limit(3),
+        ]);
 
-    // Fetch latest 3 products from Appwrite
-    async function fetchLatestProducts() {
-        try {
-            const response = await databases.listDocuments(databaseID, collectionID, [
-                Query.orderDesc("$createdAt"),
-                Query.limit(3),
-            ]);
+        latestProductsContainer.innerHTML = ""; // Clear previous content
 
-            latestProductsContainer.innerHTML = ""; // Clear previous content
+        response.documents.forEach(async (product) => {
+            let productImage = "placeholder.jpg"; // Default image
 
-            response.documents.forEach((product) => {
-                // Fetch product image from Appwrite Storage
-                const productImage = product.image1 && product.image1.length > 0 
-                    ? `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${product.image1[0]}/view?project=67dd7787000277407b0a`
-                    : 'placeholder.jpg'; // Use a placeholder if no image
+            if (product.image1 && product.image1.length > 0) {
+                try {
+                    const imageResponse = await storage.getFilePreview(BUCKET_ID, product.image1[0]);
+                    productImage = imageResponse.href;
+                } catch (error) {
+                    console.error("Error fetching product image:", error);
+                }
+            }
 
-                const productDiv = document.createElement("div");
-                productDiv.classList.add("col-12", "col-md-4", "mb-4");
-                productDiv.innerHTML = `
-                    <div style="background-color: whitesmoke;" class="card h-100">
-                        <a href="shop-single.html?product=${product.$id}">
-                            <img src="${productImage}" class="card-img-top" alt="${product.title}">
-                        </a>
-                        <div class="card-body">
-                            <ul class="list-unstyled d-flex justify-content-between">
-                                <li class="text-muted text-right"><strong>₦${product.price.toLocaleString()}</strong></li>
-                            </ul>
-                            <a href="shop-single.html?product=${product.$id}" class="h2 text-decoration-none text-dark">${product.title}</a>
-                            <p class="card-text">${product.shortDescription}</p>
-                            <button class="btn btn-primary add-to-cart" 
-                                data-id="${product.$id}" 
-                                data-title="${product.title}" 
-                                data-price="${product.price}" 
-                                data-image="${productImage}">
-                                Add to Cart
-                            </button>
-                        </div>
+            const productDiv = document.createElement("div");
+            productDiv.classList.add("col-12", "col-md-4", "mb-4");
+            productDiv.innerHTML = `
+                <div style="background-color: whitesmoke;" class="card h-100">
+                    <a href="shop-single.html?product=${product.$id}">
+                        <img src="${productImage}" class="card-img-top" alt="${product.title}">
+                    </a>
+                    <div class="card-body">
+                        <ul class="list-unstyled d-flex justify-content-between">
+                            <li class="text-muted text-right"><strong>₦${product.price.toLocaleString()}</strong></li>
+                        </ul>
+                        <a href="shop-single.html?product=${product.$id}" class="h2 text-decoration-none text-dark">${product.title}</a>
+                        <p class="card-text">${product.shortDescription}</p>
+                        <button class="btn btn-primary add-to-cart" 
+                            data-id="${product.$id}" 
+                            data-title="${product.title}" 
+                            data-price="${product.price}" 
+                            data-image="${productImage}">
+                            Add to Cart
+                        </button>
                     </div>
-                `;
+                </div>
+            `;
 
-                latestProductsContainer.appendChild(productDiv);
-            });
+            latestProductsContainer.appendChild(productDiv);
+        });
 
-            // Add event listeners to all "Add to Cart" buttons
-            document.querySelectorAll(".add-to-cart").forEach((button) => {
-                button.addEventListener("click", function () {
-                    const productId = this.getAttribute("data-id");
-                    const productTitle = this.getAttribute("data-title");
-                    const productPrice = this.getAttribute("data-price");
-                    const productImage = this.getAttribute("data-image");
-
-                    addToCart(productId, productTitle, productPrice, productImage);
-                });
-            });
-
-        } catch (error) {
-            console.error("Error fetching latest products:", error);
-        }
+    } catch (error) {
+        console.error("Error fetching latest products:", error);
     }
+}
 
-    // Add product to cart and store in localStorage
-    function addToCart(id, title, price, image) {
+// Add to Cart Function
+function addToCart(event) {
+    if (event.target.classList.contains("add-to-cart")) {
+        const button = event.target;
+        const productID = button.dataset.id;
+        const productTitle = button.dataset.title;
+        const productPrice = parseFloat(button.dataset.price);
+        const productImage = button.dataset.image;
+
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-        let existingProduct = cart.find(item => item.id === id);
-        if (existingProduct) {
-            existingProduct.quantity += 1; // Increase quantity if already in cart
+        const existingItem = cart.find(item => item.id === productID);
+        if (existingItem) {
+            existingItem.quantity += 1;
         } else {
-            cart.push({ id, title, price, image, quantity: 1 });
+            cart.push({
+                id: productID,
+                title: productTitle,
+                price: productPrice,
+                image: productImage,
+                quantity: 1
+            });
         }
 
         localStorage.setItem("cart", JSON.stringify(cart));
         updateCartCount();
-        alert(`${title} added to cart!`);
     }
+}
 
-    // Initial fetch and update cart count
+// Update Cart Count
+function updateCartCount() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+    cartCount.textContent = totalItems;
+}
+
+// Event Listeners
+document.addEventListener("DOMContentLoaded", () => {
     fetchLatestProducts();
     updateCartCount();
+    latestProductsContainer.addEventListener("click", addToCart);
 });
