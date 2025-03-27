@@ -43,9 +43,47 @@ async function fetchProductDetails() {
         document.getElementById("description").innerText = response.description;
         document.getElementById("price").innerText = response.price;
 
+        // Fetch related products
+        fetchRelatedProducts(response.category);
+
     } catch (error) {
         console.error("Error fetching product details:", error);
         document.getElementById("product-details").innerHTML = "<p>Failed to load product.</p>";
+    }
+}
+
+// Function to Fetch Related Products
+async function fetchRelatedProducts(category) {
+    try {
+        const response = await databases.listDocuments(
+            "67dd77fe000d21d01da5", // ✅ Replace with your Database ID
+            "67dd782400354e955129", // ✅ Replace with your Collection ID
+            [
+                Appwrite.Query.equal("category", category), // Filter by category
+                Appwrite.Query.limit(4) // Get only 4 products
+            ]
+        );
+
+        const relatedProductsContainer = document.getElementById("related-products");
+        relatedProductsContainer.innerHTML = response.documents.map(product => `
+            <div class="p-2 pb-3">
+                <div class="product-wap card rounded-0">
+                    <div class="card rounded-0">
+                        <img class="card-img rounded-0 img-fluid" src="${product.image1[0]}" alt="${product.title}">
+                    </div>
+                    <div class="card-body">
+                        <a href="product.html?id=${product.$id}" class="h3 text-decoration-none">${product.title}</a>
+                        <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
+                            <li>${product.shortDescription}</li>
+                        </ul>
+                        <p class="text-center mb-0">$${product.price}</p>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+
+    } catch (error) {
+        console.error("Error fetching related products:", error);
     }
 }
 
