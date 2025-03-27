@@ -3,6 +3,7 @@
 
 <head>
     <title>kosmima Shop - Product Detail Page</title>
+     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -29,15 +30,8 @@
         #top-1 {
             display: none;
         }
-    </style>
-
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    </style> 
+   
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -162,28 +156,25 @@
                 <div class="col-lg-7 mt-5">
                     <div class="card">
                         <div class="card-body">
-                            <h1 class="h2">Product title</h1>
-                            <p class="h3 py-2">$25.00</p>
+                            <h1 class="h2"><span id="title"></span></h1>
+                            <p class="h3 py-2">$<span id="price"></span></p>
         
                             <ul class="list-inline">
                                 <li class="list-inline-item">
-                                    <h6>short Description:</h6>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod temp incididunt ut labore et dolore magna aliqua.</p>
+                                    <p> <span id="shortDescription"></span></p>
                                 </li>
                                 <li class="list-inline-item">
                                     <p class="text-muted"></p>
                                 </li>
                             </ul>
-
-                            <h6>Description:</h6>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod temp incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse. Donec condimentum elementum convallis. Nunc sed orci a diam ultrices aliquet interdum quis nulla.</p>
+                            <p><span id="description"></span></p>
                             <ul class="list-inline">
                                 
                             
                             </ul>
                                 <div class="row pb-3">
                                     <div class="col d-grid">
-                                        <button  class="btn btn-success btn-lg">Add to cart</button>
+                                        <button  class="btn btn-success btn-lg"  onclick="addToCart()">Add to cart</button>
                                     </div>
                                     <div class="col d-grid">
                                         <button  class="btn btn-success btn-lg"  >Contact Us</button>
