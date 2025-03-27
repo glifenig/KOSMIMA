@@ -1,7 +1,8 @@
-// Initialize Appwrite Client
+// Initialize Appwrite
 const client = new Appwrite.Client();
-client.setEndpoint("https://cloud.appwrite.io/v1")
-      .setProject("67dd7787000277407b0a");
+client
+    .setEndpoint("https://cloud.appwrite.io/v1") // Your Appwrite endpoint
+    .setProject("67dd7787000277407b0a"); // Your project ID
 
 const databases = new Appwrite.Databases(client);
 
@@ -13,7 +14,8 @@ function getQueryParam(param) {
 
 // Function to Fetch and Display Product Details
 async function fetchProductDetails() {
-    const productId = getQueryParam("id");
+    const productId = getQueryParam("id"); // Get product ID from URL
+
     if (!productId) {
         document.getElementById("product-details").innerHTML = "<p>Product not found.</p>";
         return;
@@ -26,80 +28,24 @@ async function fetchProductDetails() {
             productId
         );
 
-        // ✅ Ensure elements exist before modifying
-        if (document.getElementById("mainImage")) {
-            document.getElementById("mainImage").src = response.image1[0];
-        }
+        // Set main image
+        document.getElementById("mainImage").src = response.image1[0];
 
-        if (document.getElementById("title")) {
-            document.getElementById("title").innerText = response.title;
-        }
+        // Generate thumbnail images
+        const thumbnailsContainer = document.getElementById("thumbnails");
+        thumbnailsContainer.innerHTML = response.image1.map(img => 
+            <img src="${img}" class="thumbnail" onclick="changeMainImage('${img}')">
+        ).join("");
 
-        if (document.getElementById("shortDescription")) {
-            document.getElementById("shortDescription").innerText = response.shortDescription;
-        }
-
-        if (document.getElementById("description")) {
-            document.getElementById("description").innerText = response.description;
-        }
-
-        if (document.getElementById("price")) {
-            document.getElementById("price").innerText = `$${response.price}`;
-        }
-
-        // ✅ Fetch other products only if the container exists
-        if (document.getElementById("other-products")) {
-            fetchOtherProducts(productId);
-        } else {
-            console.warn("Warning: 'other-products' container not found in HTML.");
-        }
+        // Set product details
+        document.getElementById("title").innerText = response.title;
+        document.getElementById("shortDescription").innerText = response.shortDescription;
+        document.getElementById("description").innerText = response.description;
+        document.getElementById("price").innerText = response.price;
 
     } catch (error) {
         console.error("Error fetching product details:", error);
         document.getElementById("product-details").innerHTML = "<p>Failed to load product.</p>";
-    }
-}
-
-// Function to Fetch and Display Other Products
-async function fetchOtherProducts(currentProductId) {
-    const otherProductsContainer = document.getElementById("other-products");
-
-    // ✅ Ensure the container exists
-    if (!otherProductsContainer) {
-        console.warn("Warning: 'other-products' container not found in HTML.");
-        return;
-    }
-
-    try {
-        const response = await databases.listDocuments(
-            "67dd77fe000d21d01da5", // ✅ Your Database ID
-            "67dd782400354e955129"  // ✅ Your Collection ID
-        );
-
-        otherProductsContainer.innerHTML = ""; // Clear previous content
-
-        response.documents.forEach(product => {
-            if (product.$id !== currentProductId) { // Exclude current product
-                otherProductsContainer.innerHTML += `
-                    <div class="col-md-3 p-2">
-                        <div class="product-wap card rounded-0">
-                            <div class="card rounded-0">
-                                <img class="card-img rounded-0 img-fluid" src="${product.image1[0]}" alt="${product.title}">
-                            </div>
-                            <div class="card-body text-center">
-                                <a href="shop-single.html?id=${product.$id}" class="h5 text-decoration-none">${product.title}</a>
-                                <p class="small">${product.shortDescription}</p>
-                                <p class="text-center font-weight-bold">$${product.price}</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-        });
-
-    } catch (error) {
-        console.error("Error fetching other products:", error);
-        otherProductsContainer.innerHTML = "<p>Failed to load products.</p>";
     }
 }
 
@@ -118,5 +64,5 @@ function goBack() {
     window.location.href = "index.html";
 }
 
-// Ensure script runs only after the page loads
+// Load product details when page loads
 document.addEventListener("DOMContentLoaded", fetchProductDetails);
