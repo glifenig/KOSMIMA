@@ -23,28 +23,26 @@ async function fetchProductDetails() {
 
     try {
         const response = await databases.getDocument(
-            "67dd77fe000d21d01da5", // ✅ Replace with your Database ID
-            "67dd782400354e955129", // ✅ Replace with your Collection ID
+            "67dd77fe000d21d01da5", // ✅ Your Database ID
+            "67dd782400354e955129", // ✅ Your Collection ID
             productId
         );
 
-        // Set main image
+        // Set main product details
         document.getElementById("mainImage").src = response.image1[0];
-
-        // Generate thumbnail images
-        const thumbnailsContainer = document.getElementById("thumbnails");
-        thumbnailsContainer.innerHTML = response.image1.map(img => 
-            `<img src="${img}" class="thumbnail" onclick="changeMainImage('${img}')">`
-        ).join("");
-
-        // Set product details
         document.getElementById("title").innerText = response.title;
         document.getElementById("shortDescription").innerText = response.shortDescription;
         document.getElementById("description").innerText = response.description;
-        document.getElementById("price").innerText = response.price;
+        document.getElementById("price").innerText = `$${response.price}`;
 
-        // Fetch related products
-        fetchRelatedProducts(response.category);
+        // Generate thumbnail images
+        const thumbnailsContainer = document.getElementById("thumbnails");
+        thumbnailsContainer.innerHTML = response.image1.map(img =>
+            `<img src="${img}" class="thumbnail" onclick="changeMainImage('${img}')">`
+        ).join("");
+
+        // Fetch other products
+        fetchOtherProducts(productId);
 
     } catch (error) {
         console.error("Error fetching product details:", error);
@@ -52,38 +50,39 @@ async function fetchProductDetails() {
     }
 }
 
-// Function to Fetch Related Products
-async function fetchRelatedProducts(category) {
+// Function to Fetch and Display Other Products
+async function fetchOtherProducts(currentProductId) {
     try {
         const response = await databases.listDocuments(
-            "67dd77fe000d21d01da5", // ✅ Replace with your Database ID
-            "67dd782400354e955129", // ✅ Replace with your Collection ID
-            [
-                Appwrite.Query.equal("category", category), // Filter by category
-                Appwrite.Query.limit(4) // Get only 4 products
-            ]
+            "67dd77fe000d21d01da5", // ✅ Your Database ID
+            "67dd782400354e955129"  // ✅ Your Collection ID
         );
 
-        const relatedProductsContainer = document.getElementById("related-products");
-        relatedProductsContainer.innerHTML = response.documents.map(product => `
-            <div class="p-2 pb-3">
-                <div class="product-wap card rounded-0">
-                    <div class="card rounded-0">
-                        <img class="card-img rounded-0 img-fluid" src="${product.image1[0]}" alt="${product.title}">
+        const otherProductsContainer = document.getElementById("other-products");
+        otherProductsContainer.innerHTML = "";
+
+        response.documents.forEach(product => {
+            if (product.$id !== currentProductId) { // Exclude current product
+                otherProductsContainer.innerHTML += `
+                    <div class="col-md-3 p-2">
+                        <div class="product-wap card rounded-0">
+                            <div class="card rounded-0">
+                                <img class="card-img rounded-0 img-fluid" src="${product.image1[0]}" alt="${product.title}">
+                            </div>
+                            <div class="card-body text-center">
+                                <a href="product.html?id=${product.$id}" class="h5 text-decoration-none">${product.title}</a>
+                                <p class="small">${product.shortDescription}</p>
+                                <p class="text-center font-weight-bold">$${product.price}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <a href="product.html?id=${product.$id}" class="h3 text-decoration-none">${product.title}</a>
-                        <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
-                            <li>${product.shortDescription}</li>
-                        </ul>
-                        <p class="text-center mb-0">$${product.price}</p>
-                    </div>
-                </div>
-            </div>
-        `).join("");
+                `;
+            }
+        });
 
     } catch (error) {
-        console.error("Error fetching related products:", error);
+        console.error("Error fetching other products:", error);
+        document.getElementById("other-products").innerHTML = "<p>Failed to load products.</p>";
     }
 }
 
