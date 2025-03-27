@@ -44,4 +44,25 @@ async function fetchProductDetails() {
         document.getElementById("price").innerText = response.price;
 
     } catch (error) {
-        console.error("Error fetching
+        console.error("Error fetching product details:", error);
+        document.getElementById("product-details").innerHTML = "<p>Failed to load product.</p>";
+    }
+}
+
+// Function to Change Main Image
+function changeMainImage(imageUrl) {
+    document.getElementById("mainImage").src = imageUrl;
+}
+
+// Function to Add Product to Cart
+function addToCart() {
+    alert("Product added to cart!");
+}
+
+// Function to Go Back to Product List
+function goBack() {
+    window.location.href = "index.html";
+}
+
+// Load product details when page loads
+document.addEventListener("DOMContentLoaded", fetchProductDetails);
