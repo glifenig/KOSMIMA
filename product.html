@@ -42,16 +42,51 @@
 <body>
     <h1>Product Details</h1>
 
-    <img id="mainImage" class="main-image" src="" alt="Main Product Image">
-    <div class="thumbnail-container" id="thumbnails"></div>
+     <!-- Open Content -->
+    <section class="bg-light">
+        <div class="container pb-5">
+            <div class="row">
+                <div class="main-image-container col-lg-5 mt-5">
+                    <img id="mainImage" class="main-image" src="" alt="Main Product Image">
+                </div>
+                <div class="thumbnail-container" id="thumbnails"></div>
+                <!-- col end -->
+                <div class="col-lg-7 mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="h2"><span id="title"></span></h1>
+                            <p class="h3 py-2">$<span id="price"></span></p>
+        
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <p> <span id="shortDescription"></span></p>
+                                </li>
+                                <li class="list-inline-item">
+                                    <p class="text-muted"></p>
+                                </li>
+                            </ul>
+                            <p><span id="description"></span></p>
+                            <ul class="list-inline">
+                                
+                            
+                            </ul>
+                                <div class="row pb-3">
+                                    <div class="col d-grid">
+                                        <button  class="btn btn-success btn-lg"  onclick="addToCart()">Add to cart</button>
+                                    </div>
+                                    <div class="col d-grid">
+                                        <button  class="btn btn-success btn-lg"  >Contact Us</button>
+                                    </div>
+                                </div>
+    
 
-    <div class="product-details" id="product-details">
-        <p><strong>Product Title:</strong> <span id="title"></span></p>
-        <p><strong>Short Description:</strong> <span id="shortDescription"></span></p>
-        <p><strong>Description:</strong> <span id="description"></span></p>
-        <p><strong>Price:</strong> $<span id="price"></span></p>
-        <button onclick="addToCart()">Add to Cart</button>
-    </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Close Content -->
 
     <button onclick="goBack()">Back to Products</button>
 
