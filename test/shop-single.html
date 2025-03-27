@@ -3,6 +3,7 @@
 
 <head>
     <title>kosmima Shop - Product Detail Page</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -145,20 +146,9 @@
                 <div class="thumbnail-container" id="thumbnails"></div>
 
                         
-                        <!--First image here-->
-                        <img class="card-img img-fluid" src="First image" alt="Card image cap" id="product-detail">
+                        
                     </div>
                     
-
-
-                        <!--Start Controls-->
-                        <div class="col-1 align-self-center">
-                            <a href="#multi-item-example" role="button" data-bs-slide="next">
-                                <i class="text-dark fas fa-chevron-right"></i>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </div>
-                        <!--End Controls-->
                     </div>
                 </div>
                 <!-- col end -->
@@ -186,7 +176,7 @@
                             </ul>
                                 <div class="row pb-3">
                                     <div class="col d-grid">
-                                        <button  class="btn btn-success btn-lg">Add to cart</button>
+                                        <button  class="btn btn-success btn-lg" onclick="addToCart()">Add to cart</button>
                                     </div>
                                     <div class="col d-grid">
                                         <button  class="btn btn-success btn-lg"  >Contact Us</button>
@@ -582,6 +572,8 @@
 
 
     <!-- Start Script -->
+
+    <script src="product.js"></script>
 
     <script src="assets/web/assets/jquery/jquery.min.js"></script>
     <script src="assets/popper/popper.min.js"></script>
