@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let row = document.createElement("tr");
             row.innerHTML = `
                 <td>
-                    <a href="shop-single.html?product=${item.id}" class="text-decoration-none">
+                    <a href="shop-single.html?id=${item.id}" class="text-decoration-none">
                         ${item.title}
                     </a>
                 </td>
