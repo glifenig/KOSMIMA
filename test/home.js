@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             <ul class="list-unstyled d-flex justify-content-between">
                                 <li class="text-muted text-right"><strong>₦${product.price.toLocaleString()}</strong></li>
                             </ul>
-                           <a href="product.html?id=${product.$id}" class="h2 text-decoration-none text-dark">${product.title}</a>
+                           <a href="shop-single.html?id=${product.$id}" class="h2 text-decoration-none text-dark">${product.title}</a>
                             <p class="card-text">${product.shortDescription}</p>
                             <button class="btn btn-primary add-to-cart" data-id="${product.$id}" data-title="${product.title}" data-price="${product.price}">Add to Cart</button>
                         </div>
