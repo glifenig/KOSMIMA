@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 productDiv.innerHTML = `
                     <div style="background-color: whitesmoke;" class="card h-100">
-                        <a href="shop-single.html?product=${product.$id}">
+                        <a href="shop-single.html?id=${product.$id}">
                             <img src="${product.image1 && product.image1.length > 0 ? product.image1[0] : 'placeholder.jpg'}" class="card-img-top" alt="Product Image">
                         </a>
                         <div class="card-body">
