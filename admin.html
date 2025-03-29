@@ -3,14 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Add Products</title>
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
-    <script defer src="admin.js"></script>
+    <title>Admin Panel</title>
 </head>
 <body>
-    <h1>Admin Panel - Add Products</h1>
-
-    <!-- Product Form -->
+    <h2>Add Product</h2>
     <form id="productForm">
         <label>Title:</label>
         <input type="text" id="title" required><br><br>
@@ -18,34 +14,34 @@
         <label>Short Description:</label>
         <input type="text" id="shortDescription" required><br><br>
 
-        <label>Full Description:</label>
+        <label>Description:</label>
         <textarea id="description" required></textarea><br><br>
 
-        <label>Price ($):</label>
+        <label>Price:</label>
         <input type="number" id="price" required><br><br>
 
-        <label>Upload Image 1:</label>
+        <label>Image 1:</label>
         <input type="file" id="image1"><br><br>
 
-        <label>Upload Image 2:</label>
+        <label>Image 2:</label>
         <input type="file" id="image2"><br><br>
 
-        <label>Upload Image 3:</label>
+        <label>Image 3:</label>
         <input type="file" id="image3"><br><br>
 
-        <label>Upload Image 4:</label>
+        <label>Image 4:</label>
         <input type="file" id="image4"><br><br>
 
-        <label>Upload Image 5:</label>
+        <label>Image 5:</label>
         <input type="file" id="image5"><br><br>
 
         <button type="submit">Add Product</button>
     </form>
 
-    <hr>
-
-    <h2>Product List</h2>
+    <h2>Products</h2>
     <div id="productList"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="admin.js"></script>
 </body>
 </html>
