@@ -6,16 +6,6 @@ client
 
 const databases = new Appwrite.Databases(client);
 
-document.addEventListener("DOMContentLoaded", async function () {
-    const cartCount = document.getElementById("cart-count");
-
-        // Update Cart Counter
-    function updateCartCount() {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        cartCount.textContent = totalItems;
-    }
-    
 // Function to get URL parameter
 function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
@@ -74,32 +64,5 @@ function goBack() {
     window.location.href = "index.html";
 }
 
-     // Attach event listeners to "Add to Cart" buttons
-            document.querySelectorAll(".add-to-cart").forEach((button) => {
-                button.addEventListener("click", function () {
-                    const productId = this.getAttribute("data-id");
-                    const productTitle = this.getAttribute("data-title");
-                    const productPrice = this.getAttribute("data-price");
-
-                    addToCart(productId, productTitle, productPrice);
-                });
-            });
-
-    function addToCart(id, title, price) {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-        // Check if item is already in cart
-        let existingProduct = cart.find(item => item.id === id);
-        if (existingProduct) {
-            existingProduct.quantity += 1;
-        } else {
-            cart.push({ id, title, price, quantity: 1 });
-        }
-
-        localStorage.setItem("cart", JSON.stringify(cart));
-        updateCartCount(); // Update cart count
-        alert(`${title} added to cart!`);
-
 // Load product details when page loads
 document.addEventListener("DOMContentLoaded", fetchProductDetails);
-            updateCartCount(); // Load cart count on page load
