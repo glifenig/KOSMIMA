@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             </ul>
                            <a href="shop-single.html?id=${product.$id}" class="h2 text-decoration-none text-dark">${product.title}</a>
                             <p class="card-text">${product.shortDescription}</p>
-                            <button class="mobi-mbri mobi-mbri-shop mbr-iconfont mbr-iconfont-btn add-to-cart" data-id="${product.$id}" data-title="${product.title}" data-price="${product.price}">Add to Cart</button>
+                            <button class="mbr-section-btn"><a class='btn btn-md btn-secondary-outline display-4" data-id="${product.$id}" data-title="${product.title}" data-price="${product.price}">Add to Cart</button>
                         </div>
                     </div>
                 `;
