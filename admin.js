@@ -11,7 +11,7 @@ const databases = new Databases(client);
 
 const databaseID = "67dd77fe000d21d01da5"; // Database ID
 const collectionID = "67dd782400354e955129"; // Collection ID
-const bucketID = "product-images"; // Storage Bucket ID
+const bucketID = "product-images"; // Replace with your storage bucket ID
 
 document.addEventListener("DOMContentLoaded", function () {
     const productForm = document.getElementById("productForm");
@@ -22,25 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // Function to upload a file and return its URL
-    async function uploadFile(file) {
-        if (!file) return "";
-        try {
-            const response = await storage.createFile(bucketID, 'unique()', file);
-            return `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${response.$id}/view?project=67dd7787000277407b0a`;
-        } catch (error) {
-            console.error("Error uploading file:", error);
-            return "";
-        }
-    }
-
     // Add Product
     productForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const title = document.getElementById("title").value.trim();
         const shortDescription = document.getElementById("shortDescription").value.trim();
-        const description = document.getElementById("description").value.trim();
+        const description = document.getElementById("description").value.trim(); // FULL DESCRIPTION
         const price = parseInt(document.getElementById("price").value.trim());
 
         if (!title || !shortDescription || !description || isNaN(price)) {
@@ -48,23 +36,29 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Upload images one by one
-        const image1 = await uploadFile(document.getElementById("image1").files[0]);
-        const image2 = await uploadFile(document.getElementById("image2").files[0]);
-        const image3 = await uploadFile(document.getElementById("image3").files[0]);
-        const image4 = await uploadFile(document.getElementById("image4").files[0]);
-        const image5 = await uploadFile(document.getElementById("image5").files[0]);
+        // Upload images and store in an array
+        let imageUrls = [];
+        for (let i = 1; i <= 5; i++) {
+            const fileInput = document.getElementById(`image${i}`);
+            if (fileInput && fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                try {
+                    const response = await storage.createFile(bucketID, `unique()`, file);
+                    const fileID = response.$id;
+                    const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/${bucketID}/files/${fileID}/view?project=67dd7787000277407b0a`;
+                    imageUrls.push(fileUrl);
+                } catch (error) {
+                    console.error(`Error uploading image${i}:`, error);
+                }
+            }
+        }
 
         const productData = {
             title,
             shortDescription,
-            description,
+            description, // Store FULL DESCRIPTION
             price,
-            image1, // Store each image separately
-            image2,
-            image3,
-            image4,
-            image5
+            image1: imageUrls // Store as an array
         };
 
         console.log("Sending product data:", productData);
@@ -75,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Product added:", response);
             alert("Product added successfully!");
             productForm.reset();
-            fetchProducts();
+            fetchProducts(); // Refresh product list
         } catch (error) {
             console.error("Error adding product:", error);
             alert(`Failed to add product. Error: ${error.message}`);
@@ -86,22 +80,18 @@ document.addEventListener("DOMContentLoaded", function () {
     async function fetchProducts() {
         try {
             const response = await databases.listDocuments(databaseID, collectionID);
-            productList.innerHTML = "";
+            productList.innerHTML = ""; // Clear previous list
 
             response.documents.forEach((product) => {
                 const productDiv = document.createElement("div");
                 productDiv.innerHTML = `
                     <h3>${product.title}</h3>
                     <p><strong>Short Description:</strong> ${product.shortDescription}</p>
-                    <p><strong>Full Description:</strong> ${product.description}</p>
+                    <p><strong>Full Description:</strong> ${product.description}</p> <!-- NOW SHOWING FULL DESCRIPTION -->
                     <p><strong>Price:</strong> $${product.price}</p>
-
-                    ${product.image1 ? `<img src="${product.image1}" width="100">` : ""}
-                    ${product.image2 ? `<img src="${product.image2}" width="100">` : ""}
-                    ${product.image3 ? `<img src="${product.image3}" width="100">` : ""}
-                    ${product.image4 ? `<img src="${product.image4}" width="100">` : ""}
-                    ${product.image5 ? `<img src="${product.image5}" width="100">` : ""}
-                    
+                    ${product.image1 && product.image1.length > 0 ? 
+                        product.image1.map(img => `<img src="${img}" width="100">`).join("") 
+                        : "No Images"}
                     <br>
                     <button onclick="deleteProduct('${product.$id}')">Delete</button>
                     <hr>
@@ -120,12 +110,12 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             await databases.deleteDocument(databaseID, collectionID, productId);
             alert("Product deleted successfully!");
-            fetchProducts();
+            fetchProducts(); // Refresh list after deletion
         } catch (error) {
             console.error("Error deleting product:", error);
             alert(`Failed to delete product. Error: ${error.message}`);
         }
     };
 
-    fetchProducts();
+    fetchProducts(); // Load products on page load
 });
