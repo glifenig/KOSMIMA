@@ -43,6 +43,13 @@ async function fetchProductDetails() {
         document.getElementById("description").innerText = response.description;
         document.getElementById("price").innerText = response.price;
 
+        // Add event listener for Add to Cart button
+        document.getElementById("addToCartBtn").addEventListener("click", () => {
+            addToCart(productId, response.title, response.price);
+        });
+
+        updateCartCount(); // Update cart count when the product page loads
+
     } catch (error) {
         console.error("Error fetching product details:", error);
         document.getElementById("product-details").innerHTML = "<p>Failed to load product.</p>";
@@ -55,8 +62,26 @@ function changeMainImage(imageUrl) {
 }
 
 // Function to Add Product to Cart
-function addToCart() {
+function addToCart(id, title, price) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Check if product is already in cart
+    let existingProduct = cart.find(item => item.id === id);
+    if (existingProduct) {
+        existingProduct.quantity += 1;
+    } else {
+        cart.push({ id, title, price, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount(); // Update cart counter
     alert("Product added to cart!");
+}
+
+// Function to Update Cart Counter
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    document.getElementById("cart-count").innerText = cart.length;
 }
 
 // Function to Go Back to Product List
