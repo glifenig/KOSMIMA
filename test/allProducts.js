@@ -13,6 +13,15 @@ const collectionID = "67dd782400354e955129"; // Collection ID
 
 document.addEventListener("DOMContentLoaded", async function () {
     const allProductsContainer = document.getElementById("allProducts");
+        const latestProductsContainer = document.getElementById("latestProducts");
+    const cartCount = document.getElementById("cart-count");
+
+        // Update Cart Counter
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCount.textContent = totalItems;
+    }
 
     // Fetch All Products
     async function fetchAllProducts() {
@@ -54,4 +63,5 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     fetchAllProducts();
+    updateCartCount();
 });
