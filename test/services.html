@@ -13,6 +13,8 @@
 
 
     <title>Kosmima | Services</title>
+     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons/mobirise-icons.css">
     <link rel="stylesheet" href="assets/tether/tether.min.css">
@@ -36,7 +38,7 @@
 <body>
 
     <div>
-        <section class="menu menu1 cid-scfzW1I84M" once="menu" id="menu1-0">
+         <section class="menu menu1 cid-scfzW1I84M" once="menu" id="menu1-0">
 
             <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
                 <div class="container">
@@ -60,15 +62,15 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true">
-                            <li class="nav-item"><a class='nav-link link text-white text-primary display-4' href='index.html'>
+                            <li class="nav-item active"><a class='nav-link link text-white text-primary display-4 active' href='index.html'>
                                     Home</a></li>
                             <li class="nav-item"><a class='nav-link link text-white text-primary display-4' href='about.html'>About</a></li>
 
-                            <li class="nav-item"><a class='nav-link link text-white text-primary display-4 active' href='services.html'>Services</a>
+                            <li class="nav-item"><a class='nav-link link text-white text-primary display-4' href='services.html'>Services</a>
                             </li>
                             <li class="nav-item"><a class='nav-link link text-white text-primary display-4' href='index.html#contact'>Contact</a></li>
 
-                            <li class="nav-item"><a class='nav-link link text-white text-primary display-4' href='cart.html'>Shopping Cart</a></li>
+                            <li class="nav-item"><a class='nav-link link text-white text-primary display-4' href='cart.html'>Shopping Cart <span id="cart-count" class="badge bg-danger">0</span></a></li>
                         </ul>
 
                         <div class="navbar-buttons mbr-section-btn"><a class="btn btn-info display-4"
@@ -298,6 +300,43 @@
                 </div>
             </section>
 
+
+             <section class="cid-spH1BS4K0n" id="header01-s">
+
+
+
+
+
+                <div class="container align-center">
+                    <div class="row justify-content-md-center">
+                        <div class="mbr-white col-md-10 col-lg-12">
+
+                            <h1 class="mbr-section-title mbr-semibold pb-3 mbr-fonts-style display-2"><strong>Computer <span id="highlight">&</span> Accessories</strong></h1>
+                         <p>Our recent product</p>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+                <!-- Start Featured Product -->
+    <section class="bg">
+        <div class="container py-5">
+            <div class="row text-center py-3">
+                <div class="col-lg-6 m-auto">
+                </div>
+            </div>
+           <div class="row" id="latestProducts">
+            <!-- Latest products will be inserted here dynamically -->
+        </div>
+            <center> <div class="mbr-section-btn"><a class='btn btn-md btn-secondary-outline display-4' href='shop.html'>Visit our store</a></div></center>
+        </div>
+    </section>
+    <!-- End Featured Product --> 
+            
+
             <section class="content2 cid-spDmAQ5HYF" id="content2-k">
 
 
@@ -375,7 +414,8 @@
         </main>
 
 
-
+            <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="home.js"></script>
         <script src="assets/web/assets/jquery/jquery.min.js"></script>
         <script src="assets/popper/popper.min.js"></script>
         <script src="assets/tether/tether.min.js"></script>
