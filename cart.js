@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const cartItemsContainer = document.getElementById("cart-items");
     const cartTotal = document.getElementById("cart-total");
+    const checkoutBtn = document.getElementById("checkout-btn");
 
     function loadCart() {
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -28,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cartItemsContainer.appendChild(row);
         });
 
+        totalPrice += 2000; // Add ₦2000 charge
         cartTotal.textContent = totalPrice.toLocaleString();
 
         // Attach event listeners to remove buttons
@@ -46,5 +48,69 @@ document.addEventListener("DOMContentLoaded", function () {
         loadCart();
     }
 
+    function payWithFlutterwave() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (cart.length === 0) {
+            alert("Your cart is empty!");
+            return;
+        }
+
+        let totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + 2000;
+        let userEmail = prompt("Enter your email:");
+        let userPhone = prompt("Enter your phone number:");
+        let fullName = prompt("Enter your full name:");
+
+        if (!userEmail || !userPhone || !fullName) {
+            alert("All details are required!");
+            return;
+        }
+
+        FlutterwaveCheckout({
+            public_key: "YOUR_FLUTTERWAVE_PUBLIC_KEY",
+            tx_ref: "TX" + Date.now(),
+            amount: totalPrice,
+            currency: "NGN",
+            payment_options: "card, mobilemoney, ussd",
+            customer: {
+                email: userEmail,
+                phone_number: userPhone,
+                name: fullName,
+            },
+            callback: function (response) {
+                if (response.status === "successful") {
+                    sendOrderDetails(userEmail, userPhone, fullName, cart, totalPrice);
+                    localStorage.removeItem("cart"); // Clear cart after payment
+                    alert("Payment Successful! Check your email for order confirmation.");
+                    window.location.href = "thank-you.html";
+                }
+            },
+            customizations: {
+                title: "GoodLife Tech Store",
+                description: "Payment for items in cart",
+                logo: "https://your-logo-url.com/logo.png",
+            },
+        });
+    }
+
+    function sendOrderDetails(email, phone, name, cart, totalPrice) {
+        fetch("https://your-server.com/send-email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email,
+                phone,
+                name,
+                cart,
+                totalPrice,
+            }),
+        })
+            .then(response => response.json())
+            .then(data => console.log("Email sent:", data))
+            .catch(error => console.error("Error sending email:", error));
+    }
+
+    checkoutBtn.addEventListener("click", payWithFlutterwave);
     loadCart();
 });
