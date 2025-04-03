@@ -7,8 +7,16 @@ document.addEventListener("DOMContentLoaded", function () {
         cartItemsContainer.innerHTML = "";
         let totalPrice = 0;
 
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = "<tr><td colspan='5'>Your cart is empty.</td></tr>";
+            cartTotal.textContent = "0";
+            return;
+        }
+
         cart.forEach((item, index) => {
-            let itemTotal = item.price * item.quantity;
+            let price = Number(item.price) || 0; // Ensure price is a valid number
+            let quantity = Number(item.quantity) || 1; // Ensure quantity is valid
+            let itemTotal = price * quantity;
             totalPrice += itemTotal;
 
             let row = document.createElement("tr");
@@ -18,8 +26,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         ${item.title}
                     </a>
                 </td>
-                <td>₦${item.price.toLocaleString()}</td>
-                <td>${item.quantity}</td>
+                <td>₦${price.toLocaleString()}</td>
+                <td>${quantity}</td>
                 <td>₦${itemTotal.toLocaleString()}</td>
                 <td>
                     <button class="btn btn-danger btn-sm remove-item" data-index="${index}">Remove</button>
