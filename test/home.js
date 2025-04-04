@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             </ul>
                            <a href="shop-single.html?id=${product.$id}" class="h2 text-decoration-none text-dark">${product.title}</a>
                             <p class="card-text">${product.shortDescription}</p>
-                            <button class="btn btn-primary add-to-cart" data-id="${product.$id}" data-title="${product.title}" data-price="${product.price}">Add to Cart</button>
+                            <button class="btn btn-success add-to-cart" data-id="${product.$id}" data-title="${product.title}" data-price="${product.price}">Add to Cart</button>
                         </div>
                     </div>
                 `;
